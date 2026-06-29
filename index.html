@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nicholas Skaggs | Salesforce Professional</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0A1628;
+    --blue: #0176D3;
+    --blue-light: #1B96FF;
+    --blue-pale: #E8F4FF;
+    --white: #FFFFFF;
+    --gray-1: #F3F6FB;
+    --gray-2: #C9D9EE;
+    --gray-3: #7B96B2;
+    --text: #1A2B3C;
+    --accent: #00D4AA;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--text); line-height: 1.6; }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 64px;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--gray-2);
+  }
+  .nav-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); letter-spacing: -0.5px; }
+  .nav-logo span { color: var(--blue); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--gray-3); font-size: 14px; font-weight: 500; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--blue); }
+
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    background: linear-gradient(135deg, var(--navy) 0%, #0D2240 60%, #0A3060 100%);
+    padding: 100px 48px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -200px; right: -200px;
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(1,118,211,0.15) 0%, transparent 70%);
+  }
+  .hero-inner {
+    max-width: 1100px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 80px; align-items: center;
+    position: relative; z-index: 1;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(1,118,211,0.2); border: 1px solid rgba(27,150,255,0.3);
+    border-radius: 100px; padding: 6px 16px;
+    font-size: 12px; font-weight: 600; color: var(--blue-light);
+    letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 24px;
+  }
+  .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(42px, 5vw, 64px); font-weight: 700;
+    color: var(--white); line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 8px;
+  }
+  .hero h1 span { color: var(--blue-light); }
+  .hero-title { font-size: 15px; font-weight: 500; color: var(--accent); letter-spacing: 0.3px; margin-bottom: 24px; }
+  .hero p { font-size: 16px; line-height: 1.75; color: rgba(255,255,255,0.7); margin-bottom: 40px; max-width: 520px; }
+  .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--blue); color: white; font-size: 15px; font-weight: 600;
+    padding: 14px 28px; border-radius: 8px; text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--blue-light); transform: translateY(-1px); }
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: transparent; border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.85); font-size: 15px; font-weight: 500;
+    padding: 14px 28px; border-radius: 8px; text-decoration: none;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--blue-light); color: var(--blue-light); }
+
+  .hero-stats {
+    display: flex; flex-direction: column; gap: 0;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; overflow: hidden;
+  }
+  .stat-item { padding: 28px 32px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .stat-item:last-child { border-bottom: none; }
+  .stat-number { font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; color: var(--white); letter-spacing: -1px; line-height: 1; margin-bottom: 4px; }
+  .stat-number span { color: var(--accent); }
+  .stat-label { font-size: 12px; color: rgba(255,255,255,0.4); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  section { padding: 96px 48px; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .section-eyebrow { font-size: 12px; font-weight: 700; color: var(--blue); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .section-title { font-family: 'Space Grotesk', sans-serif; font-size: clamp(28px, 3.5vw, 40px); font-weight: 700; color: var(--navy); letter-spacing: -0.8px; margin-bottom: 16px; }
+  .section-sub { font-size: 16px; color: var(--gray-3); max-width: 560px; margin-bottom: 56px; line-height: 1.65; }
+
+  /* ABOUT */
+  .about-section { background: var(--gray-1); }
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: start; }
+  .about-text p { font-size: 16px; line-height: 1.8; color: #3A4F65; margin-bottom: 20px; }
+  .about-highlights { display: flex; flex-direction: column; gap: 16px; }
+  .highlight-item {
+    background: var(--white); border: 1px solid var(--gray-2); border-radius: 12px;
+    padding: 20px 24px; display: flex; align-items: flex-start; gap: 16px;
+  }
+  .highlight-icon { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+  .highlight-text { font-size: 14px; color: var(--text); line-height: 1.55; }
+  .highlight-text strong { color: var(--navy); display: block; margin-bottom: 3px; font-size: 15px; }
+
+  /* CERTS & BADGES */
+  .creds-section { background: var(--white); }
+  .creds-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+  .creds-col h3 { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: var(--navy); margin-bottom: 24px; }
+  .cert-cards { display: flex; flex-direction: column; gap: 14px; }
+  .cert-card {
+    background: var(--gray-1); border: 1px solid var(--gray-2); border-radius: 12px;
+    padding: 20px 22px; display: flex; align-items: center; gap: 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .cert-card:hover { border-color: var(--blue); box-shadow: 0 4px 16px rgba(1,118,211,0.08); }
+  .cert-card.in-progress { border-style: dashed; opacity: 0.7; }
+  .cert-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+  .cert-dot.pending { background: var(--blue-light); opacity: 0.5; }
+  .cert-info { flex: 1; }
+  .cert-name { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+  .cert-meta { font-size: 12px; color: var(--gray-3); }
+  .cert-badge-label {
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 100px;
+    text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;
+  }
+  .cert-badge-label.active { background: rgba(0,212,170,0.12); color: #00A884; }
+  .cert-badge-label.progress { background: rgba(1,118,211,0.1); color: var(--blue); }
+
+  .superbadge-cards { display: flex; flex-direction: column; gap: 14px; }
+  .superbadge-card {
+    background: var(--gray-1); border: 1px solid var(--gray-2); border-radius: 12px;
+    padding: 18px 22px; display: flex; align-items: flex-start; gap: 14px;
+  }
+  .sb-icon { font-size: 20px; flex-shrink: 0; }
+  .sb-name { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+  .sb-date { font-size: 12px; color: var(--gray-3); }
+
+  .agentblazer-banner {
+    margin-top: 48px;
+    background: linear-gradient(135deg, #032D60 0%, #0B5CAB 100%);
+    border-radius: 16px; padding: 36px 40px;
+    display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .ab-left { display: flex; flex-direction: column; gap: 6px; }
+  .ab-title-row { display: flex; align-items: center; gap: 12px; }
+  .ab-title-row h4 { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; color: var(--white); letter-spacing: -0.3px; }
+  .agentblazer-banner p { font-size: 14px; color: rgba(255,255,255,0.55); max-width: 380px; line-height: 1.5; }
+  .ab-coins { display: flex; gap: 20px; align-items: center; }
+  .ab-coin {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px; padding: 20px 24px; min-width: 120px;
+  }
+  .ab-coin-icon { font-size: 40px; line-height: 1; }
+  .ab-coin-label { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.9); text-align: center; letter-spacing: 0.3px; }
+  .ab-coin-year { font-size: 11px; color: rgba(255,255,255,0.45); }
+
+  /* PROJECTS */
+  .projects-section { background: var(--gray-1); }
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; }
+  .project-card {
+    background: var(--white); border: 1px solid var(--gray-2); border-radius: 16px;
+    padding: 36px 32px; display: flex; flex-direction: column; gap: 16px;
+    transition: box-shadow 0.25s, transform 0.2s; position: relative; overflow: hidden;
+  }
+  .project-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--blue), var(--accent)); opacity: 0; transition: opacity 0.2s;
+  }
+  .project-card:hover { box-shadow: 0 12px 40px rgba(10,22,40,0.1); transform: translateY(-3px); }
+  .project-card:hover::before { opacity: 1; }
+  .project-tag { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: var(--blue); letter-spacing: 0.5px; text-transform: uppercase; }
+  .project-tag::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--blue); }
+  .project-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; color: var(--navy); line-height: 1.25; }
+  .project-desc { font-size: 14px; color: var(--gray-3); line-height: 1.65; flex: 1; }
+  .project-tech { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tech-tag { font-size: 11px; font-weight: 600; color: var(--blue); background: var(--blue-pale); padding: 4px 10px; border-radius: 6px; }
+  .project-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--blue); text-decoration: none; margin-top: 4px; transition: gap 0.15s; }
+  .project-link:hover { gap: 10px; }
+  .project-link.placeholder { color: var(--gray-3); cursor: default; font-style: italic; font-weight: 400; }
+
+  /* SKILLS */
+  .skills-section { background: var(--navy); }
+  .skills-section .section-title { color: var(--white); }
+  .skills-section .section-sub { color: rgba(255,255,255,0.5); }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
+  .skill-item {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 18px; font-size: 14px; font-weight: 500;
+    color: rgba(255,255,255,0.75); transition: background 0.2s, border-color 0.2s;
+  }
+  .skill-item:hover { background: rgba(1,118,211,0.15); border-color: rgba(1,118,211,0.3); color: var(--white); }
+
+  /* CONTACT */
+  .contact-section { background: var(--blue-pale); }
+  .contact-card {
+    background: var(--white); border: 1px solid var(--gray-2); border-radius: 20px;
+    padding: 56px; display: flex; align-items: center; justify-content: space-between;
+    gap: 40px; flex-wrap: wrap;
+  }
+  .contact-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 28px; font-weight: 700; color: var(--navy); letter-spacing: -0.5px; margin-bottom: 8px; }
+  .contact-card p { font-size: 15px; color: var(--gray-3); max-width: 400px; }
+  .contact-links { display: flex; gap: 12px; flex-wrap: wrap; }
+  .contact-link { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+  .contact-link.primary { background: var(--blue); color: white; }
+  .contact-link.primary:hover { background: var(--blue-light); }
+  .contact-link.secondary { background: var(--gray-1); border: 1px solid var(--gray-2); color: var(--navy); }
+  .contact-link.secondary:hover { border-color: var(--blue); color: var(--blue); }
+
+  footer { background: var(--navy); padding: 32px 48px; text-align: center; font-size: 13px; color: rgba(255,255,255,0.3); }
+  footer a { color: rgba(255,255,255,0.4); text-decoration: none; }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    section { padding: 64px 24px; }
+    .hero { padding: 100px 24px 64px; }
+    .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-stats { flex-direction: row; flex-wrap: wrap; }
+    .stat-item { flex: 1; min-width: 120px; border-right: 1px solid rgba(255,255,255,0.06); border-bottom: none; }
+    .about-grid { grid-template-columns: 1fr; gap: 40px; }
+    .creds-grid { grid-template-columns: 1fr; gap: 40px; }
+    .contact-card { padding: 36px 28px; }
+    footer { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Nicholas <span>Skaggs</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#credentials">Credentials</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">Salesforce Professional · Kentucky</div>
+      <h1>Nicholas<br><span>Skaggs</span></h1>
+      <div class="hero-title">Solutions Specialist → Agentforce & Service Cloud</div>
+      <p>I work Salesforce every day — not in theory. As a DirecTV Solutions Specialist, I use Service Cloud, Agentforce, and Salesforce 360 end-to-end to support DIRECTV's nationwide customer base. Now building toward my next chapter in Salesforce Administrator and Agentforce roles.</p>
+      <div class="hero-ctas">
+        <a href="#projects" class="btn-primary">View My Projects →</a>
+        <a href="https://www.salesforce.com/trailblazer/yvp1fgx4h132n3ssxx" target="_blank" class="btn-secondary">Trailhead Profile ↗</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-number">2<span>×</span></div>
+        <div class="stat-label">Salesforce Certified</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">4</div>
+        <div class="stat-label">Superbadges Earned</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">92</div>
+        <div class="stat-label">Trailhead Badges</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number" style="font-size:26px; color: var(--accent);">Innovator</div>
+        <div class="stat-label">Agentblazer 2025 & 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="section-inner">
+    <div class="section-eyebrow">Background</div>
+    <h2 class="section-title">Who I Am</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>I'm a driven IT professional with deep, daily hands-on experience inside Salesforce. As a Solutions Specialist at DIRECTV, I work cases end-to-end in Service Cloud — leveraging Agentforce for AI-assisted troubleshooting, knowledge retrieval, and workflow optimization across a nationwide customer base.</p>
+        <p>My background spans satellite, streaming, and broadband support, with strong fundamentals in network diagnostics, cloud infrastructure, and cybersecurity. I hold the AWS Certified Cloud Practitioner credential alongside my Salesforce certifications.</p>
+        <p>I'm actively building toward Salesforce Administrator and Agentforce roles — taking on hands-on portfolio projects that combine MCP, AI tooling, and Service Cloud to solve real business problems.</p>
+      </div>
+      <div class="about-highlights">
+        <div class="highlight-item">
+          <div class="highlight-icon">⚡</div>
+          <div class="highlight-text">
+            <strong>Daily Salesforce User</strong>
+            Cases, reports, dashboards, and Agentforce — not just certified, actively using the platform every day at DIRECTV.
+          </div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-icon">🤖</div>
+          <div class="highlight-text">
+            <strong>Agentforce in Production</strong>
+            Uses Agentforce for AI-assisted troubleshooting and knowledge retrieval in a real enterprise support environment.
+          </div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-icon">☁️</div>
+          <div class="highlight-text">
+            <strong>AWS + Salesforce Certified</strong>
+            AWS Certified Cloud Practitioner plus two active Salesforce credentials with more in progress.
+          </div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-icon">🔧</div>
+          <div class="highlight-text">
+            <strong>Building Real Solutions</strong>
+            Portfolio projects using MCP, Cursor, Claude, Amazon Connect, and Agentforce — not sandbox exercises.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREDENTIALS -->
+<section class="creds-section" id="credentials">
+  <div class="section-inner">
+    <div class="section-eyebrow">Credentials</div>
+    <h2 class="section-title">Certifications & Superbadges</h2>
+    <p class="section-sub">Verified by Salesforce. Earned through real study and hands-on work — not shortcuts.</p>
+    <div class="creds-grid">
+      <div class="creds-col">
+        <h3>Certifications</h3>
+        <div class="cert-cards">
+          <div class="cert-card">
+            <div class="cert-dot"></div>
+            <div class="cert-info">
+              <div class="cert-name">Salesforce Certified Agentforce Specialist</div>
+              <div class="cert-meta">Issued January 2026</div>
+            </div>
+            <div class="cert-badge-label active">Active</div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-dot"></div>
+            <div class="cert-info">
+              <div class="cert-name">Salesforce Certified Platform Foundations</div>
+              <div class="cert-meta">Issued January 2026</div>
+            </div>
+            <div class="cert-badge-label active">Active</div>
+          </div>
+          <div class="cert-card">
+            <div class="cert-dot"></div>
+            <div class="cert-info">
+              <div class="cert-name">AWS Certified Cloud Practitioner</div>
+              <div class="cert-meta">Amazon Web Services</div>
+            </div>
+            <div class="cert-badge-label active">Active</div>
+          </div>
+          <div class="cert-card in-progress">
+            <div class="cert-dot pending"></div>
+            <div class="cert-info">
+              <div class="cert-name">Platform App Builder</div>
+              <div class="cert-meta">In Progress</div>
+            </div>
+            <div class="cert-badge-label progress">In Progress</div>
+          </div>
+          <div class="cert-card in-progress">
+            <div class="cert-dot pending"></div>
+            <div class="cert-info">
+              <div class="cert-name">Service Cloud Specialist</div>
+              <div class="cert-meta">In Progress</div>
+            </div>
+            <div class="cert-badge-label progress">In Progress</div>
+          </div>
+        </div>
+      </div>
+      <div class="creds-col">
+        <h3>Superbadges</h3>
+        <div class="superbadge-cards">
+          <div class="superbadge-card">
+            <div class="sb-icon">🏅</div>
+            <div>
+              <div class="sb-name">Flow Administration</div>
+              <div class="sb-date">Completed June 2026</div>
+            </div>
+          </div>
+          <div class="superbadge-card">
+            <div class="sb-icon">🏅</div>
+            <div>
+              <div class="sb-name">Object Relationships</div>
+              <div class="sb-date">Completed May 2026</div>
+            </div>
+          </div>
+          <div class="superbadge-card">
+            <div class="sb-icon">🏅</div>
+            <div>
+              <div class="sb-name">Agentforce Service</div>
+              <div class="sb-date">Completed November 2025</div>
+            </div>
+          </div>
+          <div class="superbadge-card">
+            <div class="sb-icon">🏅</div>
+            <div>
+              <div class="sb-name">Prompt Builder Templates</div>
+              <div class="sb-date">Completed November 2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="agentblazer-banner">
+      <div class="ab-left">
+        <div class="ab-title-row">
+          <h4>Agentblazer Status</h4>
+        </div>
+        <p>Recognized by Salesforce for hands-on Agentforce expertise — earned two consecutive years.</p>
+      </div>
+      <div class="ab-coins">
+        <div class="ab-coin">
+          <div class="ab-coin-icon">🥇</div>
+          <div class="ab-coin-label">Innovator</div>
+          <div class="ab-coin-year">2026</div>
+        </div>
+        <div class="ab-coin">
+          <div class="ab-coin-icon">🥇</div>
+          <div class="ab-coin-label">Innovator</div>
+          <div class="ab-coin-year">2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects-section" id="projects">
+  <div class="section-inner">
+    <div class="section-eyebrow">Work</div>
+    <h2 class="section-title">Portfolio Projects</h2>
+    <p class="section-sub">Real solutions built on real Salesforce orgs — not sandbox exercises.</p>
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="project-tag">Flow Builder · Completed</div>
+        <div class="project-title">Sales Inquiry Capture Flow</div>
+        <div class="project-desc">Built a Screen Flow from scratch to capture inbound sales call data in a structured way — so customers can be followed up with if a sale doesn't close. The flow collects customer details, auto-creates a Sales Inquiry record in Salesforce 360, and generates a linked follow-up Task with a formula-driven due date. Added to the Utility Bar for quick rep access during live calls.</div>
+        <div class="project-tech">
+          <span class="tech-tag">Flow Builder</span>
+          <span class="tech-tag">Custom Objects</span>
+          <span class="tech-tag">Screen Flow</span>
+          <span class="tech-tag">Task Automation</span>
+          <span class="tech-tag">Salesforce 360</span>
+        </div>
+        <a href="https://drive.google.com/file/d/1mb4GT5rNmBF_32dEqaC4KurtApxlI62s/view?usp=sharing" target="_blank" class="project-link">▶ Watch Demo →</a>
+        <span class="project-link" style="color:#00A884; font-style:normal; font-weight:600;">✓ Completed March 2026</span>
+      </div>
+
+      <div class="project-card">
+        <div class="project-tag">Headless 360 / MCP</div>
+        <div class="project-title">Salesforce ↔ AI Integration via MCP</div>
+        <div class="project-desc">Connected a live Salesforce org to external AI tools (Claude, Cursor) using Salesforce Hosted MCP Servers and External Client Apps with OAuth 2.0. Enables AI agents to query org data and metadata directly — no UI required.</div>
+        <div class="project-tech">
+          <span class="tech-tag">MCP</span>
+          <span class="tech-tag">Cursor</span>
+          <span class="tech-tag">Claude</span>
+          <span class="tech-tag">OAuth 2.0</span>
+          <span class="tech-tag">Salesforce APIs</span>
+        </div>
+        <span class="project-link placeholder">— Demo coming soon</span>
+      </div>
+      <div class="project-card">
+        <div class="project-tag">AI + Copilot</div>
+        <div class="project-title">DirecTV Manager Copilot Dashboard</div>
+        <div class="project-desc">Read-only Salesforce data access for DirecTV managers via Microsoft Copilot and MCP — no Salesforce license required. Managers get real-time customer and case insights directly in the tools they already use daily, saving on licenses and training.</div>
+        <div class="project-tech">
+          <span class="tech-tag">Microsoft Copilot</span>
+          <span class="tech-tag">MCP</span>
+          <span class="tech-tag">Salesforce 360</span>
+          <span class="tech-tag">Case Object</span>
+        </div>
+        <span class="project-link placeholder">— Demo coming soon</span>
+      </div>
+      <div class="project-card">
+        <div class="project-tag">Agentforce / Service Cloud</div>
+        <div class="project-title">Pre-Call AI Retention Save Flow</div>
+        <div class="project-desc">Before a call routes to an agent, AI gathers the cancel reason, pulls the customer's Salesforce data (package, tenure, payment history), generates a personalized save offer, and routes to the agent with everything pre-loaded in Omni-Channel — reducing handle time and improving save rates.</div>
+        <div class="project-tech">
+          <span class="tech-tag">Amazon Connect</span>
+          <span class="tech-tag">Agentforce</span>
+          <span class="tech-tag">Omni-Channel</span>
+          <span class="tech-tag">Service Cloud</span>
+          <span class="tech-tag">Case Object</span>
+        </div>
+        <span class="project-link placeholder">— Demo coming soon</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="skills-section" id="skills">
+  <div class="section-inner">
+    <div class="section-eyebrow" style="color: var(--accent)">Stack</div>
+    <h2 class="section-title">Skills & Tools</h2>
+    <p class="section-sub">Technologies I work with — in production and in portfolio projects.</p>
+    <div class="skills-grid">
+      <div class="skill-item">Salesforce Service Cloud</div>
+      <div class="skill-item">Agentforce</div>
+      <div class="skill-item">Salesforce 360</div>
+      <div class="skill-item">Amazon Connect</div>
+      <div class="skill-item">MCP (Model Context Protocol)</div>
+      <div class="skill-item">Omni-Channel</div>
+      <div class="skill-item">Flow Builder</div>
+      <div class="skill-item">SOQL</div>
+      <div class="skill-item">Apex (learning)</div>
+      <div class="skill-item">Prompt Builder</div>
+      <div class="skill-item">Case Management</div>
+      <div class="skill-item">Reports & Dashboards</div>
+      <div class="skill-item">Cursor AI</div>
+      <div class="skill-item">Claude AI</div>
+      <div class="skill-item">Microsoft Copilot</div>
+      <div class="skill-item">VS Code / SFDX</div>
+      <div class="skill-item">AWS Cloud</div>
+      <div class="skill-item">Network Diagnostics</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="section-inner">
+    <div class="contact-card">
+      <div>
+        <h3>Let's Connect</h3>
+        <p>Open to Salesforce Administrator, Agentforce, and Service Cloud roles — especially where AI and customer experience intersect. Also available for Salesforce consulting engagements.</p>
+        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 8px;">
+          <a href="mailto:nkskaggs2@gmail.com" style="color: var(--blue); text-decoration: none; font-size: 15px; font-weight: 500;">📧 nkskaggs2@gmail.com</a>
+          <a href="tel:6063591507" style="color: var(--blue); text-decoration: none; font-size: 15px; font-weight: 500;">📞 (606) 359-1507</a>
+        </div>
+      </div>
+      <div class="contact-links">
+        <a href="https://www.salesforce.com/trailblazer/yvp1fgx4h132n3ssxx" target="_blank" class="contact-link primary">Trailhead Profile</a>
+        <a href="https://www.linkedin.com/in/nicholas-skaggs-88b230298" target="_blank" class="contact-link secondary">LinkedIn ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Nicholas Skaggs · <a href="https://www.salesforce.com/trailblazer/yvp1fgx4h132n3ssxx">Trailhead ↗</a></p>
+</footer>
+
+</body>
+</html>
