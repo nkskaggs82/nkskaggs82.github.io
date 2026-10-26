@@ -71,6 +71,17 @@
   .shot-small img { max-width: 420px; }
   .shot-narrow figcaption { max-width: 620px; margin-left: auto; margin-right: auto; }
 
+
+  /* Popup output replica */
+  .popup { max-width: 620px; margin: 0 auto; background: #1f2226; color: #e4e7eb; border-radius: 14px; border: 1px solid #33383e; box-shadow: 0 8px 28px rgba(10,22,40,0.12); overflow: hidden; }
+  .popup-title { text-align: center; font-size: 20px; padding: 14px; border-bottom: 1px solid #3a3f45; color: #f1f3f5; }
+  .popup-body { padding: 14px 22px 20px; font-size: 13.5px; line-height: 1.55; }
+  .popup-body p { color: #e4e7eb; margin: 0; }
+  .popup-body b { color: #fff; }
+  .popup-h { display: block; margin: 12px 0 4px; padding: 3px 8px; border-left: 4px solid #1b96ff; background: rgba(27,150,255,0.15); font-weight: 700; font-size: 14px; color: #fff; }
+  .popup .tag { color: #fff; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
+  .popup-foot { text-align: right; padding: 12px 18px; border-top: 1px solid #3a3f45; }
+  .popup-foot span { background: #0176d3; color: #fff; font-weight: 600; font-size: 13px; padding: 6px 16px; border-radius: 16px; }
   .callout { background: linear-gradient(135deg, #032D60 0%, #0B5CAB 100%); color: #fff; border-radius: 16px; padding: 32px 36px; }
   .callout h3 { color: #fff; }
   .callout p { color: rgba(255,255,255,0.78); font-size: 15.5px; }
@@ -169,7 +180,37 @@
       <figcaption><strong>Tech call.</strong> The customer's Samsung app is buffering. The popup matches the right Knowledge article and flags that he threatened to cancel on a past case, so the agent knows this is also a save opportunity.</figcaption>
     </figure>
 
-    <!--LOYALTY_SHOT-->
+    <figure>
+      <div class="popup" role="img" aria-label="Customer Insights popup output on a loyalty case">
+        <div class="popup-title">Customer Insights</div>
+        <div class="popup-body">
+          <span class="popup-h">CUSTOMER SNAPSHOT</span>
+          <p><b>CUSTOMER:</b> Gloria Steadman | DirecTV Stream + Device Lease | Premier</p>
+          <p><b>TENURE:</b> Customer since 07/19/2023 (1195 days)</p>
+          <p><b>PAYS:</b> $149.99/mo for the package</p>
+          <p><b>CURRENT OFFER:</b> $25 off - $25 off per month x 12 months (Active)</p>
+          <p><b>AVAILABLE OFFERS:</b> None</p>
+          <p><b>TODAY:</b> Requesting downgrade from PREMIER - fixed income, bill too high.</p>
+          <p><b>RECENT INTERACTIONS:</b> 07/07/2026 - Remote not pairing with Gemini device - Closed. Customer's remote would not pair with her Gemini streaming device.</p>
+          <span class="popup-h">LOYALTY CALL</span>
+          <p><b>BEST OFFER:</b> No offers available</p>
+          <p><b>BACKUP OFFER:</b> None</p>
+          <p><b>PACKAGE OPTIONS:</b></p>
+          <p>Ultimate | Price with its NCO: $55.98/mo | Saves $94.01/mo vs. what the customer pays now</p>
+          <p>Choice | Price with its NCO: $30.98/mo | Saves $119.01/mo vs. what the customer pays now</p>
+          <p>Entertainment | Price with its NCO: $56.98/mo | Saves $93.01/mo vs. what the customer pays now</p>
+          <p><span class="tag" style="background:#2e844a">LEAD OPTION:</span> Ultimate - saves $94.01/mo ($1,128.12/yr) - closest step down, keeps the most of their service</p>
+          <span class="popup-h">CARES SCRIPT</span>
+          <p><b>CONNECT:</b> Gloria, I understand your bill is too high after your recent loss, and I appreciate your time and your loyalty since 2023.</p>
+          <p><b>BE ACCOUNTABLE:</b> What has changed in your monthly budget that makes the current price unaffordable?</p>
+          <p><b>RESEARCH:</b> I have a few quick questions so I can find the best option for you. What channels or shows are most important to you and everyone in your household?</p>
+          <p><b>BE THE EXPERT:</b> The best step down is the Ultimate package at $55.98/mo, which saves $94.01/mo and $1,128.12/yr, and it keeps more of your service while lowering your bill. Let me get this started for you.</p>
+          <p><b>SUMMARIZE:</b> Just to recap, you called about wanting a lower bill due to fixed income, I was able to propose a step-down to Ultimate that saves $94.01/mo, and your next bill will reflect the new package price. Thank you for your time and your continued loyalty.</p>
+        </div>
+        <div class="popup-foot"><span>Finish</span></div>
+      </div>
+      <figcaption style="max-width:620px;margin-left:auto;margin-right:auto"><strong>Loyalty call.</strong> Output from the live popup on a loyalty case. Gloria has no offers left, so the flow prices each cheaper package with its new-customer discount, compares it to what she pays now, and flags the closest step down. The CARES lines are built around her reason for calling.</figcaption>
+    </figure>
   </div>
 </section>
 
@@ -216,7 +257,17 @@
       <figcaption><strong>Screen flow behind the button.</strong> Get Case, Get Account, run the prompt template, show the formatted result. Nothing is saved.</figcaption>
     </figure>
 
-    <!--DATA_FLOW_SHOT-->
+    <div class="card" style="margin-bottom:36px">
+      <h3>Customer Insights Data flow (template-triggered)</h3>
+      <p style="font-size:14.5px;margin-bottom:8px">This flow runs inside the prompt and hands the AI clean, pre-calculated lines:</p>
+      <ul>
+        <li><strong>Offers:</strong> every Account Offer with its status, so ended offers are never offered again.</li>
+        <li><strong>Past cases:</strong> the customer's recent cases, excluding today's, for the repeat-issue and loyalty checks.</li>
+        <li><strong>Packages:</strong> sorted by price. For each step down it calculates the price with that package's new-customer discount and the monthly savings against what the customer pays now, and only keeps packages that actually lower the bill.</li>
+        <li><strong>Lead option:</strong> the first package that qualifies is flagged as the lead, with monthly and yearly savings already calculated.</li>
+        <li><strong>Knowledge:</strong> published article titles and summaries for article matching.</li>
+      </ul>
+    </div>
 
     <figure class="shot-narrow">
       <img src="img/customer-insights/prompt-template-1.jpg" alt="Prompt Builder template with coaching instructions and Account merge fields" loading="lazy">
