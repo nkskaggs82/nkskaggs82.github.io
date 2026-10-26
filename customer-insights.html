@@ -143,8 +143,9 @@
     <p class="lead">I added a <strong>Customer Insights</strong> button to both the Loyalty and Technical Support case pages. It opens a popup with the snapshot and call guidance, and closes when the agent clicks Finish. Nothing is written to the case, so the record stays clean and every run uses live data.</p>
 
     <figure>
-      <img src="img/customer-insights/case-page-button.jpg" alt="Case record in the Service Console with the Customer Insights button in the header actions" loading="lazy">
-      <figcaption><strong>The button on the case.</strong> It sits with the other header actions so it's out of the way but always one click away.</figcaption>
+      <img src="img/customer-insights/case-page-button.jpg" alt="Case record in the Service Console with the Customer Insights button highlighted in the header actions" loading="lazy">
+      <img src="img/customer-insights/case-page-button-closeup.jpg" alt="Close-up of the case header actions: Submit for Approval, View Case Hierarchy, and Customer Insights highlighted" loading="lazy" style="max-width:520px;margin:16px 0 0 auto;">
+      <figcaption><strong>The button on the case</strong> (highlighted in orange). It sits with the other header actions, so it's out of the way but always one click away.</figcaption>
     </figure>
 
     <div class="grid-2">
@@ -162,7 +163,7 @@
       <div class="card">
         <h3>Then guidance by call type</h3>
         <ul>
-          <li><span class="pill green">BEST OFFER</span>Loyalty: the smallest available offer, with new price and monthly and yearly savings, plus a backup</li>
+          <li><span class="pill green">LEAD OFFER</span>Loyalty: the smallest available offer, with new price and monthly and yearly savings, plus a backup if the customer says no</li>
           <li><span class="pill green">LEAD OPTION</span>Loyalty with no offers left: the closest cheaper package</li>
           <li><strong>CARES script lines:</strong> Connect, Be Accountable, Research, Be the Expert, Summarize</li>
           <li><span class="pill green">ARTICLE TO USE</span>Tech: the Knowledge article that matches the issue</li>
@@ -170,6 +171,7 @@
         </ul>
       </div>
     </div>
+    <p style="font-size:15px;margin-top:24px;max-width:760px"><strong>Why lead with the smallest offer?</strong> Retention works like a ladder. The agent starts with the smallest discount that could save the call and only moves up to the backup if the customer pushes back. That keeps the customer and protects revenue, so the popup always puts the smallest available offer first.</p>
   </div>
 </section>
 
@@ -197,12 +199,12 @@
           <p><span class="tag" style="background:#2e844a">ARTICLE TO USE:</span> Get the DIRECTV App for Samsung - Troubleshooting &amp; Tips - This article directly covers how to get and troubleshoot the DIRECTV app on Samsung smart TVs.</p>
           <p><b>CONNECT LINE:</b> Bob, I understand the app buffering is frustrating and I appreciate your time and being a customer since 2024; I will work to resolve this with you.</p>
           <p><span class="tag" style="background:#dd7a01">LOYALTY WATCH:</span> This caller referenced canceling due to a price increase; this is a save opportunity.</p>
-          <p><span class="tag" style="background:#2e844a">BEST OFFER:</span> $15 off - new price $137.00/mo - monthly savings $15.00 - yearly savings $180.00</p>
+          <p><span class="tag" style="background:#2e844a">LEAD OFFER:</span> $15 off - new price $137.00/mo - monthly savings $15.00 - yearly savings $180.00</p>
           <p><b>BACKUP OFFER:</b> $25 off - new price $127.00/mo - monthly savings $25.00 - yearly savings $300.00</p>
         </div>
         <div class="popup-foot"><span>Finish</span></div>
       </div>
-      <figcaption style="max-width:620px;margin-left:auto;margin-right:auto"><strong>Tech call.</strong> Output from the live popup, trimmed after the offers. Bob's Samsung app is buffering. The popup matches the right Knowledge article, flags that he's threatening to cancel, and has his best offer ready in case the call turns into a save.</figcaption>
+      <figcaption style="max-width:620px;margin-left:auto;margin-right:auto"><strong>Tech call.</strong> Output from the live popup, trimmed after the offers. Bob's Samsung app is buffering. The popup matches the right Knowledge article, flags that he's threatening to cancel, and has his lead offer ready in case the call turns into a save.</figcaption>
     </figure>
 
     <figure>
@@ -218,7 +220,7 @@
           <p><b>TODAY:</b> Requesting downgrade from PREMIER - fixed income, bill too high.</p>
           <p><b>RECENT INTERACTIONS:</b> 07/07/2026 - Remote not pairing with Gemini device - Closed. Customer's remote would not pair with her Gemini streaming device.</p>
           <span class="popup-h">LOYALTY CALL</span>
-          <p><b>BEST OFFER:</b> No offers available</p>
+          <p><b>LEAD OFFER:</b> No offers available</p>
           <p><b>BACKUP OFFER:</b> None</p>
           <p><b>PACKAGE OPTIONS:</b></p>
           <p>Ultimate | Price with its NCO: $129.99/mo | Saves $87.01/mo vs. what the customer pays now</p>
