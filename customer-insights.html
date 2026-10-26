@@ -82,6 +82,7 @@
   .popup .tag { color: #fff; font-weight: 700; padding: 1px 6px; border-radius: 4px; }
   .popup-foot { text-align: right; padding: 12px 18px; border-top: 1px solid #3a3f45; }
   .popup-foot span { background: #0176d3; color: #fff; font-weight: 600; font-size: 13px; padding: 6px 16px; border-radius: 16px; }
+  .df-grid { display: grid; grid-template-columns: 0.42fr 1fr; gap: 28px; align-items: start; }
   .callout { background: linear-gradient(135deg, #032D60 0%, #0B5CAB 100%); color: #fff; border-radius: 16px; padding: 32px 36px; }
   .callout h3 { color: #fff; }
   .callout p { color: rgba(255,255,255,0.78); font-size: 15.5px; }
@@ -96,6 +97,8 @@
     .hero { padding: 110px 16px 56px; }
     .grid-2, .grid-3 { grid-template-columns: 1fr; }
     .arch { grid-template-columns: 1fr; }
+    .df-grid { grid-template-columns: 1fr; }
+    .df-grid figure:first-child img { max-width: 300px; margin: 0 auto; }
     .arch-step:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -15px; transform: translateX(50%); }
     .callout { padding: 26px 22px; }
   }
@@ -122,8 +125,9 @@
 <section>
   <div class="section-inner">
     <div class="eyebrow">The problem</div>
-    <h2>Agents start every call digging for information</h2>
-    <p class="lead">I take loyalty and tech calls at DIRECTV. When a customer calls in upset, the agent has to click through the account, the offer history and the old cases just to understand who they're talking to, while the customer waits. The AI assistant we use mostly suggests Knowledge articles based on the case subject. It doesn't pull the customer's picture together or say what to offer.</p>
+    <h2>Every second counts when the customer is already upset</h2>
+    <p class="lead" style="margin-bottom:16px">Anyone who's worked in a call center knows the first minute sets the tone. The customer is often frustrated before you even say hello: their bill went up, their service is down, or they've already been transferred twice. Meanwhile the agent is clicking through the account, the offer history and old cases just to figure out who's on the line, while the customer waits.</p>
+    <p class="lead">I've seen this from both sides: taking those calls myself, and now helping agents who get stuck mid-call. The Salesforce org I work in is still new, and features are being added all the time. I built this to show one idea that would help right now: put everything the agent needs on one screen, in seconds.</p>
     <div class="grid-3">
       <div class="card"><h3>Too many screens</h3><p>Package, price, offers and past cases live in different places, so the first minute of the call goes to searching.</p></div>
       <div class="card"><h3>Offer guesswork</h3><p>Agents have to work out which offers a customer still qualifies for and do the savings math themselves, live on the call.</p></div>
@@ -257,15 +261,25 @@
       <figcaption><strong>Screen flow behind the button.</strong> Get Case, Get Account, run the prompt template, show the formatted result. Nothing is saved.</figcaption>
     </figure>
 
+    <h3 style="margin-top:8px">Customer Insights Data: the flow that makes it work</h3>
+    <p style="font-size:15.5px;margin-bottom:20px;max-width:760px">This is the engine behind the popup. It runs inside the prompt every time the button is clicked, gathers the customer's data, and does all the math before the AI ever sees it.</p>
+    <div class="df-grid">
+      <figure>
+        <img src="img/customer-insights/data-flow-overview.jpg" alt="Customer Insights Data flow overview: Get Account Offers, Loop Offers, Get Recent Cases, Loop Cases, Get Packages, Get Current Package, Loop Packages, Get Articles, Loop Articles" loading="lazy">
+        <figcaption><strong>The whole flow.</strong> Offers, past cases, packages, then Knowledge articles, each turned into lines the AI can read.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/customer-insights/data-flow-packages.jpg" alt="Loop Packages expanded: Is Cheaper Package decision, Add Cheaper Package Line, Is First Cheaper decision, Add Lead Package Line, Mark Lead Found" loading="lazy">
+        <figcaption><strong>Where the math happens.</strong> For each package, the flow checks whether it's a step down that actually lowers the bill, writes the line with its price and savings, and flags the first one as the lead option.</figcaption>
+      </figure>
+    </div>
     <div class="card" style="margin-bottom:36px">
-      <h3>Customer Insights Data flow (template-triggered)</h3>
-      <p style="font-size:14.5px;margin-bottom:8px">This flow runs inside the prompt and hands the AI clean, pre-calculated lines:</p>
       <ul>
-        <li><strong>Offers:</strong> every Account Offer with its status, so ended offers are never offered again.</li>
-        <li><strong>Past cases:</strong> the customer's recent cases, excluding today's, for the repeat-issue and loyalty checks.</li>
-        <li><strong>Packages:</strong> sorted by price. For each step down it calculates the price with that package's new-customer discount and the monthly savings against what the customer pays now, and only keeps packages that actually lower the bill.</li>
-        <li><strong>Lead option:</strong> the first package that qualifies is flagged as the lead, with monthly and yearly savings already calculated.</li>
-        <li><strong>Knowledge:</strong> published article titles and summaries for article matching.</li>
+        <li><strong>Offers:</strong> pulls every offer on the account with its status, so offers that already ended are never offered again.</li>
+        <li><strong>Past cases:</strong> pulls the customer's recent cases (not today's), so the AI can catch repeat issues and past cancel threats.</li>
+        <li><strong>Packages:</strong> checks every cheaper package, prices it with that package's new-customer discount, compares it to what the customer pays now, and only keeps packages that actually lower the bill.</li>
+        <li><strong>Lead option:</strong> flags the closest step down, with monthly and yearly savings already calculated.</li>
+        <li><strong>Knowledge:</strong> pulls published article titles and summaries, so the AI can match the right article to tech issues.</li>
       </ul>
     </div>
 
