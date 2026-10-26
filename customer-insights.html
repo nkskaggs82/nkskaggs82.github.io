@@ -178,11 +178,32 @@
   <div class="section-inner">
     <div class="eyebrow">See it run</div>
     <h2>What the agent sees</h2>
-    <p class="lead">Every label is bold, each section gets a header, and the lines the agent needs mid-call are color-tagged. Tags only appear when there's something to act on. The formatting comes from Flow, not the AI, so it looks the same every time.</p>
+    <p class="lead">Below is real output from the popup. Every label is bold, each section gets a header, and the lines the agent needs mid-call are color-tagged. Tags only appear when there's something to act on. The formatting comes from Flow, not the AI, so it looks the same every time.</p>
 
-    <figure class="shot-narrow">
-      <img src="img/customer-insights/popup-tech.jpg" alt="Customer Insights popup on a tech case showing the customer snapshot, issue, matching Knowledge article, connect line and loyalty watch flag" loading="lazy">
-      <figcaption><strong>Tech call.</strong> The customer's Samsung app is buffering. The popup matches the right Knowledge article and flags that he threatened to cancel on a past case, so the agent knows this is also a save opportunity.</figcaption>
+    <figure>
+      <div class="popup" role="img" aria-label="Customer Insights popup output on a tech case">
+        <div class="popup-title">Customer Insights</div>
+        <div class="popup-body">
+          <span class="popup-h">CUSTOMER SNAPSHOT</span>
+          <p><b>CUSTOMER:</b> Bob Banana | DirecTV Satellite | Choice</p>
+          <p><b>TENURE:</b> Customer since 09/15/2024 (771 days)</p>
+          <p><b>PAYS:</b> $152.00/mo for the package</p>
+          <p><b>CURRENT OFFER:</b> None (ended: Choice NCO, $52.01 off)</p>
+          <p><b>AVAILABLE OFFERS:</b> $15 off x 12 mo | $25 off x 12 mo | $55 off x 12 mo</p>
+          <p><b>TODAY:</b> DirecTV app buffering on Samsung smart TV; customer is threatening to cancel.</p>
+          <p><b>RECENT INTERACTIONS:</b> 07/19/2026 - NCO ended - bill went up - Escalated. Customer's 24-month Choice new customer offer ended and bill increased; customer requested a lower price or will cancel.</p>
+          <span class="popup-h">TECH CALL</span>
+          <p><b>ISSUE:</b> Customer's DIRECTV app on a Samsung smart TV is buffering during streaming.</p>
+          <p><b>REPEAT ISSUE:</b> No</p>
+          <p><span class="tag" style="background:#2e844a">ARTICLE TO USE:</span> Get the DIRECTV App for Samsung - Troubleshooting &amp; Tips - This article directly covers how to get and troubleshoot the DIRECTV app on Samsung smart TVs.</p>
+          <p><b>CONNECT LINE:</b> Bob, I understand the app buffering is frustrating and I appreciate your time and being a customer since 2024; I will work to resolve this with you.</p>
+          <p><span class="tag" style="background:#dd7a01">LOYALTY WATCH:</span> This caller referenced canceling due to a price increase; this is a save opportunity.</p>
+          <p><span class="tag" style="background:#2e844a">BEST OFFER:</span> $15 off - new price $137.00/mo - monthly savings $15.00 - yearly savings $180.00</p>
+          <p><b>BACKUP OFFER:</b> $25 off - new price $127.00/mo - monthly savings $25.00 - yearly savings $300.00</p>
+        </div>
+        <div class="popup-foot"><span>Finish</span></div>
+      </div>
+      <figcaption style="max-width:620px;margin-left:auto;margin-right:auto"><strong>Tech call.</strong> Output from the live popup, trimmed after the offers. Bob's Samsung app is buffering. The popup matches the right Knowledge article, flags that he's threatening to cancel, and has his best offer ready in case the call turns into a save.</figcaption>
     </figure>
 
     <figure>
@@ -228,7 +249,7 @@
     <div class="arch">
       <div class="arch-step"><div class="num">01</div><h4>Quick action</h4><p>"Customer Insights" button on the Loyalty and Tech case Lightning pages.</p></div>
       <div class="arch-step"><div class="num">02</div><h4>Screen flow</h4><p>Gets the case and its account, then calls the prompt template.</p></div>
-      <div class="arch-step"><div class="num">03</div><h4>Data flow</h4><p>A template-triggered prompt flow gathers offers, past cases, packages and articles, and does all the math.</p></div>
+      <div class="arch-step"><div class="num">03</div><h4>Data flow</h4><p>A template-triggered prompt flow gathers offers, past cases, packages and articles, and does the package pricing math.</p></div>
       <div class="arch-step"><div class="num">04</div><h4>Prompt template</h4><p>Prompt Builder Flex template turns the data into the snapshot, guidance and CARES lines.</p></div>
       <div class="arch-step"><div class="num">05</div><h4>Formatted popup</h4><p>A flow formula adds bold labels, headers and color tags before display.</p></div>
     </div>
@@ -264,7 +285,7 @@
     </figure>
 
     <h3 style="margin-top:8px">Customer Insights Data: the flow that makes it work</h3>
-    <p style="font-size:15.5px;margin-bottom:20px;max-width:760px">This is the engine behind the popup. It runs inside the prompt every time the button is clicked, gathers the customer's data, and does all the math before the AI ever sees it.</p>
+    <p style="font-size:15.5px;margin-bottom:20px;max-width:760px">This is the engine behind the popup. It runs inside the prompt every time the button is clicked, gathers the customer's data, and does the package pricing math before the AI ever sees it.</p>
     <div class="df-grid">
       <figure>
         <img src="img/customer-insights/data-flow-overview.jpg" alt="Customer Insights Data flow overview: Get Account Offers, Loop Offers, Get Recent Cases, Loop Cases, Get Packages, Get Current Package, Loop Packages, Get Articles, Loop Articles" loading="lazy">
@@ -301,7 +322,7 @@
     <div class="eyebrow">Key design decision</div>
     <div class="callout">
       <h3>The flow does the logic. The AI writes the words.</h3>
-      <p>In early testing the model got numbers wrong. It reordered packages, did the savings math incorrectly, and picked a different "best" option on each run. So I moved everything that has to be right into Flow: sorting packages, calculating monthly and yearly savings, and flagging the lead option. The AI now only turns verified data into readable guidance. I also added guardrails in the prompt: it's told not to invent offers, conditions or channel lineups, and to only point to a Knowledge article that matches the issue.</p>
+      <p>In early testing the model got numbers wrong. It reordered packages, did the savings math incorrectly, and picked a different "best" option on each run. So I moved the package logic into Flow: sorting packages, pricing each one with its new-customer discount, calculating monthly and yearly savings, and flagging the lead option. The AI turns that verified data into readable guidance. The only math it still does is simple offer subtraction (current price minus the offer), which I checked on every demo case. I also added guardrails in the prompt: it's told not to invent offers, conditions or channel lineups, and to only point to a Knowledge article that matches the issue.</p>
     </div>
   </div>
 </section>
@@ -320,7 +341,7 @@
         <h3>What I learned</h3>
         <ul>
           <li>Ground the prompt in a flow, not just merge fields, when you need lists, sorting or math.</li>
-          <li>Any number an agent will say to a customer should be calculated, not generated.</li>
+          <li>The more a number matters, the less of the math the AI should be doing.</li>
           <li>Format in Flow so the output reads the same every time.</li>
           <li>Old outcomes in case descriptions mislead the model, so clean demo data matters.</li>
         </ul>
