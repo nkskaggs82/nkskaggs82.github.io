@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Insights | Nicholas Skaggs</title>
+<meta name="description" content="One-click customer snapshot and call guidance for DIRECTV loyalty and tech agents, built with Prompt Builder and Flow.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0A1628; --blue: #0176D3; --blue-light: #1B96FF; --blue-pale: #E8F4FF;
+    --white: #FFFFFF; --gray-1: #F3F6FB; --gray-2: #C9D9EE; --gray-3: #7B96B2;
+    --text: #1A2B3C; --accent: #00D4AA; --green: #2E844A; --orange: #DD7A01; --red: #BA0517;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--text); line-height: 1.6; }
+  a { color: var(--blue); }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--gray-2); }
+  .nav-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); letter-spacing: -0.5px; text-decoration: none; }
+  .nav-logo span { color: var(--blue); }
+  .nav-back { text-decoration: none; color: var(--gray-3); font-size: 14px; font-weight: 500; }
+  .nav-back:hover { color: var(--blue); }
+
+  .hero { background: linear-gradient(135deg, var(--navy) 0%, #0D2240 60%, #0A3060 100%); padding: 136px 48px 80px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(1,118,211,0.15) 0%, transparent 70%); }
+  .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(1,118,211,0.2); border: 1px solid rgba(27,150,255,0.3); border-radius: 100px; padding: 6px 16px; font-size: 12px; font-weight: 600; color: var(--blue-light); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 24px; }
+  .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(36px, 5vw, 56px); font-weight: 700; color: var(--white); line-height: 1.08; letter-spacing: -1.2px; margin-bottom: 16px; }
+  .hero h1 span { color: var(--blue-light); }
+  .hero p { font-size: 17px; line-height: 1.75; color: rgba(255,255,255,0.72); max-width: 720px; margin-bottom: 32px; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hero-tags span { font-size: 12px; font-weight: 600; color: var(--blue-light); background: rgba(27,150,255,0.12); border: 1px solid rgba(27,150,255,0.25); padding: 5px 12px; border-radius: 6px; }
+
+  section { padding: 80px 48px; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .alt { background: var(--gray-1); }
+  .eyebrow { font-size: 12px; font-weight: 700; color: var(--blue); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 3.2vw, 36px); font-weight: 700; color: var(--navy); letter-spacing: -0.6px; margin-bottom: 16px; }
+  h3 { font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .lead { font-size: 17px; color: #3A4F65; max-width: 760px; margin-bottom: 36px; line-height: 1.75; }
+  p { color: #3A4F65; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { background: var(--white); border: 1px solid var(--gray-2); border-radius: 14px; padding: 26px; }
+  .card ul { padding-left: 18px; margin-top: 8px; }
+  .card li { font-size: 14.5px; color: #3A4F65; margin-bottom: 6px; }
+  .stat { font-family: 'Space Grotesk', sans-serif; font-size: 34px; font-weight: 700; color: var(--navy); line-height: 1; margin-bottom: 6px; }
+  .stat span { color: var(--accent); }
+  .stat-label { font-size: 13px; color: var(--gray-3); font-weight: 500; }
+
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; padding: 2px 8px; border-radius: 4px; margin-right: 6px; }
+  .pill.green { background: var(--green); } .pill.orange { background: var(--orange); } .pill.red { background: var(--red); }
+
+  /* Architecture */
+  .arch { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; align-items: stretch; margin-top: 8px; }
+  .arch-step { background: var(--white); border: 1px solid var(--gray-2); border-radius: 12px; padding: 18px 16px; position: relative; }
+  .arch-step .num { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; color: var(--blue); letter-spacing: 1px; margin-bottom: 6px; }
+  .arch-step h4 { font-size: 15px; color: var(--navy); margin-bottom: 6px; }
+  .arch-step p { font-size: 13px; line-height: 1.55; }
+  .arch-step:not(:last-child)::after { content: '→'; position: absolute; right: -11px; top: 50%; transform: translateY(-50%); color: var(--blue); font-weight: 700; background: var(--gray-1); padding: 0 1px; }
+
+  /* Screenshots */
+  figure { margin: 0 0 36px; }
+  figure img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--gray-2); box-shadow: 0 8px 28px rgba(10,22,40,0.08); background: #fff; }
+  figcaption { font-size: 13.5px; color: var(--gray-3); margin-top: 10px; line-height: 1.55; }
+  figcaption strong { color: var(--navy); }
+  .shot-narrow img { max-width: 620px; margin: 0 auto; }
+  .shot-small img { max-width: 420px; }
+  .shot-narrow figcaption { max-width: 620px; margin-left: auto; margin-right: auto; }
+
+  .callout { background: linear-gradient(135deg, #032D60 0%, #0B5CAB 100%); color: #fff; border-radius: 16px; padding: 32px 36px; }
+  .callout h3 { color: #fff; }
+  .callout p { color: rgba(255,255,255,0.78); font-size: 15.5px; }
+
+  .next li { margin-bottom: 8px; }
+  footer { background: var(--navy); padding: 32px 48px; text-align: center; font-size: 13px; color: rgba(255,255,255,0.35); }
+  footer a { color: rgba(255,255,255,0.5); text-decoration: none; }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 16px; }
+    section { padding: 56px 16px; }
+    .hero { padding: 110px 16px 56px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .arch { grid-template-columns: 1fr; }
+    .arch-step:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -15px; transform: translateX(50%); }
+    .callout { padding: 26px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Nicholas <span>Skaggs</span></a>
+  <a class="nav-back" href="index.html#projects">← All projects</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Portfolio Project · Prompt Builder + Flow · Completed October 2026</div>
+    <h1>Customer Insights:<br><span>the whole customer in one click</span></h1>
+    <p>When a call comes in, the agent clicks one button on the case and gets a snapshot of the customer in seconds: their package and price, current and available offers, recent cases and why they're calling today. Then it tells them what to do next. Loyalty calls get the best offer and CARES script lines. Tech calls get a repeat-issue check, the right Knowledge article and a loyalty warning.</p>
+    <div class="hero-tags">
+      <span>Prompt Builder</span><span>Template-Triggered Prompt Flow</span><span>Screen Flow</span><span>Quick Actions</span><span>Custom Objects</span><span>Knowledge</span><span>Service Console</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">The problem</div>
+    <h2>Agents start every call digging for information</h2>
+    <p class="lead">I take loyalty and tech calls at DIRECTV. When a customer calls in upset, the agent has to click through the account, the offer history and the old cases just to understand who they're talking to, while the customer waits. The AI assistant we use mostly suggests Knowledge articles based on the case subject. It doesn't pull the customer's picture together or say what to offer.</p>
+    <div class="grid-3">
+      <div class="card"><h3>Too many screens</h3><p>Package, price, offers and past cases live in different places, so the first minute of the call goes to searching.</p></div>
+      <div class="card"><h3>Offer guesswork</h3><p>Agents have to work out which offers a customer still qualifies for and do the savings math themselves, live on the call.</p></div>
+      <div class="card"><h3>Missed save signals</h3><p>A tech call from someone who threatened to cancel last month looks like any other tech call unless the agent happens to dig.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="section-inner">
+    <div class="eyebrow">The solution</div>
+    <h2>One button, one popup, nothing to save</h2>
+    <p class="lead">I added a <strong>Customer Insights</strong> button to both the Loyalty and Technical Support case pages. It opens a popup with the snapshot and call guidance, and closes when the agent clicks Finish. Nothing is written to the case, so the record stays clean and every run uses live data.</p>
+
+    <figure>
+      <img src="img/customer-insights/case-page-button.jpg" alt="Case record in the Service Console with the Customer Insights button in the header actions" loading="lazy">
+      <figcaption><strong>The button on the case.</strong> It sits with the other header actions so it's out of the way but always one click away.</figcaption>
+    </figure>
+
+    <div class="grid-2">
+      <div class="card">
+        <h3>Every call: the snapshot</h3>
+        <ul>
+          <li>Customer, product and package</li>
+          <li>Tenure and what they pay today</li>
+          <li>Current offer, plus offers that already ended</li>
+          <li>Offers still available to give</li>
+          <li>Why they're calling today</li>
+          <li>Up to 3 recent cases with what happened</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Then guidance by call type</h3>
+        <ul>
+          <li><span class="pill green">BEST OFFER</span>Loyalty: the smallest available offer, with new price and monthly and yearly savings, plus a backup</li>
+          <li><span class="pill green">LEAD OPTION</span>Loyalty with no offers left: the closest cheaper package</li>
+          <li><strong>CARES script lines:</strong> Connect, Be Accountable, Research, Be the Expert, Summarize</li>
+          <li><span class="pill green">ARTICLE TO USE</span>Tech: the Knowledge article that matches the issue</li>
+          <li><span class="pill red">REPEAT ISSUE</span>and <span class="pill orange">LOYALTY WATCH</span> flags when they apply</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">See it run</div>
+    <h2>What the agent sees</h2>
+    <p class="lead">Every label is bold, each section gets a header, and the lines the agent needs mid-call are color-tagged. Tags only appear when there's something to act on. The formatting comes from Flow, not the AI, so it looks the same every time.</p>
+
+    <figure class="shot-narrow">
+      <img src="img/customer-insights/popup-tech.jpg" alt="Customer Insights popup on a tech case showing the customer snapshot, issue, matching Knowledge article, connect line and loyalty watch flag" loading="lazy">
+      <figcaption><strong>Tech call.</strong> The customer's Samsung app is buffering. The popup matches the right Knowledge article and flags that he threatened to cancel on a past case, so the agent knows this is also a save opportunity.</figcaption>
+    </figure>
+
+    <!--LOYALTY_SHOT-->
+  </div>
+</section>
+
+<section class="alt">
+  <div class="section-inner">
+    <div class="eyebrow">How it's built</div>
+    <h2>Architecture</h2>
+    <p class="lead">Five pieces, all standard Salesforce. No Apex.</p>
+    <div class="arch">
+      <div class="arch-step"><div class="num">01</div><h4>Quick action</h4><p>"Customer Insights" button on the Loyalty and Tech case Lightning pages.</p></div>
+      <div class="arch-step"><div class="num">02</div><h4>Screen flow</h4><p>Gets the case and its account, then calls the prompt template.</p></div>
+      <div class="arch-step"><div class="num">03</div><h4>Data flow</h4><p>A template-triggered prompt flow gathers offers, past cases, packages and articles, and does all the math.</p></div>
+      <div class="arch-step"><div class="num">04</div><h4>Prompt template</h4><p>Prompt Builder Flex template turns the data into the snapshot, guidance and CARES lines.</p></div>
+      <div class="arch-step"><div class="num">05</div><h4>Formatted popup</h4><p>A flow formula adds bold labels, headers and color tags before display.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">Data model</div>
+    <h2>Two custom objects and a few Account fields</h2>
+    <p class="lead">I kept the model small so it's easy for the AI to read and easy to demo. <strong>DTV Package</strong> holds the four packages with regular price and new-customer discount. <strong>Account Offer</strong> is a child of Account with one record per offer, and its status says whether it's on the bill now, can still be offered, or already ended. Account got <em>Customer Since</em> and a <em>Current Package</em> lookup.</p>
+    <div class="grid-2">
+      <figure>
+        <img src="img/customer-insights/object-account-offer.jpg" alt="Account Offer object fields: Account master-detail, Monthly Discount, Months, Offer Name, Status" loading="lazy">
+        <figcaption><strong>Account Offer.</strong> Master-detail to Account, plus Monthly Discount, Months and Status (Active, Available, Used).</figcaption>
+      </figure>
+      <figure>
+        <img src="img/customer-insights/object-dtv-package.jpg" alt="DTV Package object fields: Name, NCO Discount, Regular Price" loading="lazy">
+        <figcaption><strong>DTV Package.</strong> Entertainment, Choice, Ultimate and Premier, each with a regular price and new-customer discount.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="section-inner">
+    <div class="eyebrow">Under the hood</div>
+    <h2>The flows and the prompt</h2>
+
+    <figure class="shot-narrow shot-small">
+      <img src="img/customer-insights/screen-flow.jpg" alt="Screen flow canvas: Get Case, Get Account, Generate Insights, Snapshot Result" loading="lazy">
+      <figcaption><strong>Screen flow behind the button.</strong> Get Case, Get Account, run the prompt template, show the formatted result. Nothing is saved.</figcaption>
+    </figure>
+
+    <!--DATA_FLOW_SHOT-->
+
+    <figure class="shot-narrow">
+      <img src="img/customer-insights/prompt-template-1.jpg" alt="Prompt Builder template with coaching instructions and Account merge fields" loading="lazy">
+      <figcaption><strong>Prompt Builder template.</strong> The instructions tell the model to use only the data provided, then merge in the account, today's case and the data flow's output.</figcaption>
+    </figure>
+    <figure class="shot-narrow">
+      <img src="img/customer-insights/prompt-template-2.jpg" alt="Prompt template showing case merge fields and the Customer Insights Data flow resource" loading="lazy">
+      <figcaption><strong>Grounding.</strong> Today's case fields plus the <em>Customer Insights Data</em> flow, which supplies offers, past cases, cheaper packages and Knowledge articles.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">Key design decision</div>
+    <div class="callout">
+      <h3>The flow does the logic. The AI writes the words.</h3>
+      <p>In early testing the model got numbers wrong. It reordered packages, did the savings math incorrectly, and picked a different "best" option on each run. So I moved everything that has to be right into Flow: sorting packages, calculating monthly and yearly savings, and flagging the lead option. The AI now only turns verified data into readable guidance. I also added guardrails: it can't invent offers, conditions or channel lineups, and it says "No matching article on file" instead of forcing a bad match.</p>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="section-inner">
+    <div class="eyebrow">Results &amp; what's next</div>
+    <h2>Where it landed</h2>
+    <div class="grid-3" style="margin-bottom:36px">
+      <div class="card"><div class="stat">1<span> click</span></div><div class="stat-label">Full customer picture, loyalty or tech</div></div>
+      <div class="card"><div class="stat">0</div><div class="stat-label">Fields written to the case</div></div>
+      <div class="card"><div class="stat">5<span>/5</span></div><div class="stat-label">Demo scenarios checked against the data</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <h3>What I learned</h3>
+        <ul>
+          <li>Ground the prompt in a flow, not just merge fields, when you need lists, sorting or math.</li>
+          <li>Any number an agent will say to a customer should be calculated, not generated.</li>
+          <li>Format in Flow so the output reads the same every time.</li>
+          <li>Old outcomes in case descriptions mislead the model, so clean demo data matters.</li>
+        </ul>
+      </div>
+      <div class="card next">
+        <h3>Next phase</h3>
+        <ul>
+          <li>A full guided CARES flow that walks the agent through each step of the save call.</li>
+          <li>Knowledge articles for gaps the tool exposed, like satellite "no signal."</li>
+          <li>Option to log the agent's chosen offer back to the case for reporting.</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:13px; color:var(--gray-3); margin-top:28px">Built in my own Salesforce developer org with mock DIRECTV-style data. No real customer data is used.</p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Nicholas Skaggs · <a href="index.html">Portfolio home</a> · <a href="https://www.linkedin.com/in/nicholas-skaggs-88b230298" target="_blank">LinkedIn ↗</a></p>
+</footer>
+
+</body>
+</html>
