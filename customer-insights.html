@@ -127,7 +127,8 @@
     <div class="eyebrow">The problem</div>
     <h2>Every second counts when the customer is already upset</h2>
     <p class="lead" style="margin-bottom:16px">Anyone who's worked in a call center knows the first minute sets the tone. The customer is often frustrated before you even say hello: their bill went up, their service is down, or they've already been transferred twice. Meanwhile the agent is clicking through the account, the offer history and old cases just to figure out who's on the line, while the customer waits.</p>
-    <p class="lead">I've seen this from both sides: taking those calls myself, and now helping agents who get stuck mid-call. The Salesforce org I work in is still new, and features are being added all the time. I built this to show one idea that would help right now: put everything the agent needs on one screen, in seconds.</p>
+    <p class="lead" style="margin-bottom:16px">I've seen this from both sides: taking those calls myself, and now helping agents who get stuck mid-call. The Salesforce org I work in is still new, and features are being added all the time. I built this to show one idea that would help right now: put everything the agent needs on one screen, in seconds.</p>
+    <p class="lead">Agentforce could do this with the right ask if it were set up for it, but in the org I work in it's currently set up to summarize case comments and review billing. One button is faster than typing a question or pasting in a prompt mid-call, so I built it as a button.</p>
     <div class="grid-3">
       <div class="card"><h3>Too many screens</h3><p>Package, price, offers and past cases live in different places, so the first minute of the call goes to searching.</p></div>
       <div class="card"><h3>Offer guesswork</h3><p>Agents have to work out which offers a customer still qualifies for and do the savings math themselves, live on the call.</p></div>
@@ -191,8 +192,8 @@
           <span class="popup-h">CUSTOMER SNAPSHOT</span>
           <p><b>CUSTOMER:</b> Gloria Steadman | DirecTV Stream + Device Lease | Premier</p>
           <p><b>TENURE:</b> Customer since 07/19/2023 (1195 days)</p>
-          <p><b>PAYS:</b> $149.99/mo for the package</p>
-          <p><b>CURRENT OFFER:</b> $25 off - $25 off per month x 12 months (Active)</p>
+          <p><b>PAYS:</b> $217.00/mo for the package</p>
+          <p><b>CURRENT OFFER:</b> $25 off, $25 off per month x 12 months</p>
           <p><b>AVAILABLE OFFERS:</b> None</p>
           <p><b>TODAY:</b> Requesting downgrade from PREMIER - fixed income, bill too high.</p>
           <p><b>RECENT INTERACTIONS:</b> 07/07/2026 - Remote not pairing with Gemini device - Closed. Customer's remote would not pair with her Gemini streaming device.</p>
@@ -200,20 +201,21 @@
           <p><b>BEST OFFER:</b> No offers available</p>
           <p><b>BACKUP OFFER:</b> None</p>
           <p><b>PACKAGE OPTIONS:</b></p>
-          <p>Ultimate | Price with its NCO: $55.98/mo | Saves $94.01/mo vs. what the customer pays now</p>
-          <p>Choice | Price with its NCO: $30.98/mo | Saves $119.01/mo vs. what the customer pays now</p>
-          <p>Entertainment | Price with its NCO: $56.98/mo | Saves $93.01/mo vs. what the customer pays now</p>
-          <p><span class="tag" style="background:#2e844a">LEAD OPTION:</span> Ultimate - saves $94.01/mo ($1,128.12/yr) - closest step down, keeps the most of their service</p>
+          <p>Ultimate | Price with its NCO: $129.99/mo | Saves $87.01/mo vs. what the customer pays now</p>
+          <p>Choice | Price with its NCO: $99.99/mo | Saves $117.01/mo vs. what the customer pays now</p>
+          <p>Entertainment | Price with its NCO: $94.99/mo | Saves $122.01/mo vs. what the customer pays now</p>
+          <p><span class="tag" style="background:#2e844a">LEAD OPTION:</span> Ultimate - saves $87.01/mo ($1,044.12/yr) - closest step down, keeps the most of their service</p>
+          <p>Confirm whether the current offer stays on the new package.</p>
           <span class="popup-h">CARES SCRIPT</span>
-          <p><b>CONNECT:</b> Gloria, I understand your bill is too high after your recent loss, and I appreciate your time and your loyalty since 2023.</p>
-          <p><b>BE ACCOUNTABLE:</b> What has changed in your monthly budget that makes the current price unaffordable?</p>
-          <p><b>RESEARCH:</b> I have a few quick questions so I can find the best option for you. What channels or shows are most important to you and everyone in your household?</p>
-          <p><b>BE THE EXPERT:</b> The best step down is the Ultimate package at $55.98/mo, which saves $94.01/mo and $1,128.12/yr, and it keeps more of your service while lowering your bill. Let me get this started for you.</p>
-          <p><b>SUMMARIZE:</b> Just to recap, you called about wanting a lower bill due to fixed income, I was able to propose a step-down to Ultimate that saves $94.01/mo, and your next bill will reflect the new package price. Thank you for your time and your continued loyalty.</p>
+          <p><b>CONNECT:</b> Gloria, I understand your bill is too high after your loss, and I appreciate you calling today and being a customer since 2023.</p>
+          <p><b>BE ACCOUNTABLE:</b> What has changed in your budget that makes Premier unaffordable now?</p>
+          <p><b>RESEARCH:</b> I have a few quick questions so I can find the best lower-cost option. What channels or types of shows are most important to you at home? Who else watches with you, and what do they watch?</p>
+          <p><b>BE THE EXPERT:</b> The closest lower-cost option I can move you to is Ultimate at $129.99 per month, which saves you $87.01 a month and $1,044.12 a year based on what you pay now, and it keeps as much of your service as possible. Let me get this started for you.</p>
+          <p><b>SUMMARIZE:</b> Just to recap, you called about lowering your bill because Premier is unaffordable, I was able to identify a lower-cost package option, and your next bill will reflect the new package pricing. Thank you for your loyalty.</p>
         </div>
         <div class="popup-foot"><span>Finish</span></div>
       </div>
-      <figcaption style="max-width:620px;margin-left:auto;margin-right:auto"><strong>Loyalty call.</strong> Output from the live popup on a loyalty case. Gloria has no offers left, so the flow prices each cheaper package with its new-customer discount, compares it to what she pays now, and flags the closest step down. The CARES lines are built around her reason for calling.</figcaption>
+      <figcaption style="max-width:620px;margin-left:auto;margin-right:auto"><strong>Loyalty call.</strong> Output from the live popup on a loyalty case, with punctuation lightly cleaned up. Gloria has no offers left, so the flow prices each cheaper package with its new-customer discount, compares it to what she pays now, and flags the closest step down. The CARES lines are built around her reason for calling.</figcaption>
     </figure>
   </div>
 </section>
@@ -299,7 +301,7 @@
     <div class="eyebrow">Key design decision</div>
     <div class="callout">
       <h3>The flow does the logic. The AI writes the words.</h3>
-      <p>In early testing the model got numbers wrong. It reordered packages, did the savings math incorrectly, and picked a different "best" option on each run. So I moved everything that has to be right into Flow: sorting packages, calculating monthly and yearly savings, and flagging the lead option. The AI now only turns verified data into readable guidance. I also added guardrails: it can't invent offers, conditions or channel lineups, and it says "No matching article on file" instead of forcing a bad match.</p>
+      <p>In early testing the model got numbers wrong. It reordered packages, did the savings math incorrectly, and picked a different "best" option on each run. So I moved everything that has to be right into Flow: sorting packages, calculating monthly and yearly savings, and flagging the lead option. The AI now only turns verified data into readable guidance. I also added guardrails in the prompt: it's told not to invent offers, conditions or channel lineups, and to only point to a Knowledge article that matches the issue.</p>
     </div>
   </div>
 </section>
