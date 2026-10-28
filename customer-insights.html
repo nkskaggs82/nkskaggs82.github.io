@@ -322,7 +322,7 @@
     <div class="eyebrow">Key design decision</div>
     <div class="callout">
       <h3>The flow does the logic. The AI writes the words.</h3>
-      <p>In early testing the model got numbers wrong. It reordered packages, did the savings math incorrectly, and picked a different "best" option on each run. So I moved the package logic into Flow: sorting packages, pricing each one with its new-customer discount, calculating monthly and yearly savings, and flagging the lead option. The AI turns that verified data into readable guidance. The only math it still does is simple offer subtraction (current price minus the offer), which I checked on every demo case. I also added guardrails in the prompt: it's told not to invent offers, conditions or channel lineups, and to only point to a Knowledge article that matches the issue.</p>
+      <p>Built for accuracy. The package logic, where mistakes would matter most, runs in Flow: sorting the packages, pricing each one with its new-customer discount, calculating monthly and yearly savings, and flagging the lead option. Those numbers come out the same every time. The AI turns that verified data into clear, readable guidance, and every demo case was checked against the org. Guardrails in the prompt keep it from inventing offers, conditions or channel lineups, and from pointing to a Knowledge article that doesn't match the issue.</p>
     </div>
   </div>
 </section>
