@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Salesforce + AI via MCP | Nicholas Skaggs</title>
-<meta name="description" content="Connecting a Salesforce org to Claude, Claude Code and Cursor through Salesforce hosted MCP servers, with OAuth and real demos.">
+<meta name="description" content="Connecting a Salesforce org to Claude, Claude Code and Cursor through Salesforce hosted MCP servers (AIforce, formerly Headless 360): ask questions, update records and run AI templates by typing a sentence.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -104,6 +104,15 @@
   }
   .chat-shot img { max-width: 720px; margin: 0 auto; }
   .chat-shot figcaption { max-width: 720px; margin-left: auto; margin-right: auto; }
+  .ba-label { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; margin-bottom: 12px; }
+  .ba-label.before { background: #FDECEA; color: var(--red); }
+  .ba-label.after { background: #E6F4EA; color: var(--green); }
+  .card p { font-size: 15px; }
+  .use-card h3 { font-size: 17px; }
+  .use-card .ex { font-size: 14px; font-style: italic; color: var(--navy); margin: 6px 0 8px; }
+  .use-card .where { font-size: 12.5px; font-weight: 600; color: var(--blue); }
+  .shot-todo { border: 2px dashed var(--gray-2); border-radius: 12px; background: var(--gray-1); padding: 40px 24px; text-align: center; color: var(--gray-3); font-size: 14px; max-width: 720px; margin: 0 auto; }
+  .shot-todo strong { display: block; color: var(--navy); margin-bottom: 4px; }
   .flow-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
   @media (max-width: 900px) { .flow-steps { grid-template-columns: 1fr; } }
 </style>
@@ -119,9 +128,9 @@
   <div class="hero-inner">
     <div class="hero-badge">Portfolio Project · MCP + Salesforce · Completed October 2026</div>
     <h1>Salesforce + AI via MCP:<br><span>running an org from a chat window</span></h1>
-    <p>I connected a Salesforce org to Claude, Claude Code and Cursor using Salesforce's hosted MCP servers. Now I can ask the org questions in plain English, fix data by describing the change, and run a Prompt Builder template from outside Salesforce, all through OAuth and the org's own security.</p>
+    <p>I connected a Salesforce org to AI tools (Claude, Claude Code and Cursor) through Salesforce's hosted MCP servers, part of Salesforce AIforce (formerly Headless 360). Now a person can ask the org a question, update a record, or run an AI template just by typing a sentence, and Salesforce's own security still decides what they can see and change.</p>
     <div class="hero-tags">
-      <span>MCP</span><span>External Client Apps</span><span>OAuth 2.0</span><span>Salesforce Hosted MCP Servers</span><span>Prompt Builder</span><span>SOQL</span><span>Claude</span><span>Claude Code</span><span>Cursor</span>
+      <span>MCP</span><span>AIforce (formerly Headless 360)</span><span>External Client Apps</span><span>OAuth 2.0</span><span>Salesforce Hosted MCP Servers</span><span>Prompt Builder</span><span>SOQL</span><span>Claude</span><span>Claude Code</span><span>Cursor</span>
     </div>
   </div>
 </header>
@@ -129,38 +138,53 @@
 <section>
   <div class="section-inner">
     <div class="eyebrow">The problem</div>
-    <h2>Good questions shouldn't need a report builder</h2>
-    <p class="lead" style="margin-bottom:16px">A lot of everyday Salesforce questions are simple to ask and slow to answer. Which customers are still on their new customer offer? What does this account pay right now? Getting that usually means building a report, writing a query, or clicking through records one at a time.</p>
-    <p class="lead">MCP (Model Context Protocol) is an open standard that lets AI tools connect to systems like Salesforce. With Salesforce's hosted MCP servers, an AI assistant can query and update the org directly, while the org's login, permissions and sharing rules stay in charge. I wanted to see how far that goes in practice, so I set it up end to end in my own org and used it for real work.</p>
+    <h2>Getting answers out of Salesforce takes too many steps</h2>
+    <p class="lead">Simple questions and small updates add up. In a call center they happen hundreds of times a day, and each one means a report, a search, or a few minutes of clicking.</p>
+    <div class="grid-2">
+      <div class="card">
+        <span class="ba-label before">Before</span>
+        <p><strong>A supervisor</strong> wants to know which customers' promotions end this month. They request a report, wait for it, export it and sort it in a spreadsheet.</p>
+        <p style="margin-top:12px"><strong>A rep</strong> needs to escalate a case. They open the case, change the status, then type a note.</p>
+      </div>
+      <div class="card">
+        <span class="ba-label after">After</span>
+        <p><strong>The supervisor</strong> types "Which customers' promotions end this month?" into an AI chat tool like Claude. The list comes back in seconds, with no report.</p>
+        <p style="margin-top:12px"><strong>The rep</strong> types "Escalate case 00001080 and note that the customer called back." The case updates without being opened.</p>
+        <p style="margin-top:12px">Both still follow Salesforce security: each person can only see and change what they already could in Salesforce.</p>
+      </div>
+    </div>
   </div>
 </section>
 
 <section class="alt">
   <div class="section-inner">
-    <div class="eyebrow">How it's built</div>
-    <h2>Four pieces</h2>
-    <p class="lead">No custom code was needed for the connection itself. It's all Salesforce setup plus each AI tool's connector settings.</p>
-    <div class="flow-steps" style="margin-bottom:40px">
-      <div class="arch-step"><div class="num">01</div><h4>AI tool</h4><p>Claude (chat), Claude Code and Cursor, each with the org added as an MCP server.</p></div>
-      <div class="arch-step"><div class="num">02</div><h4>OAuth login</h4><p>An External Client App handles sign-in, so every request runs as a real Salesforce user.</p></div>
-      <div class="arch-step"><div class="num">03</div><h4>Hosted MCP server</h4><p>Salesforce runs the MCP server. I turned on the ones I needed in Setup.</p></div>
-      <div class="arch-step"><div class="num">04</div><h4>Org data &amp; prompts</h4><p>Records, SOQL queries and a Prompt Builder template, all available as tools.</p></div>
+    <div class="eyebrow">In plain English</div>
+    <h2>Two ideas behind it</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>MCP: a universal plug for AI</h3>
+        <p>Model Context Protocol is an open standard that lets any AI tool connect to a system like Salesforce in the same way. Think of it as USB-C for AI: set up the connection once, and Claude, Cursor or another AI tool can all use it.</p>
+      </div>
+      <div class="card">
+        <h3>AIforce: Salesforce without the screens</h3>
+        <p>Salesforce announced this as Headless 360 in April 2026 and renamed it AIforce in September 2026. It opens Salesforce's data, actions and rules to AI tools through MCP and APIs. People can work from chat, Slack or Copilot, while the data and the security rules stay in Salesforce.</p>
+      </div>
     </div>
+  </div>
+</section>
 
-    <figure>
-      <img src="img/mcp/oauth-settings.jpg" alt="External Client App OAuth settings with the claude.ai callback URL and mcp_api and refresh_token scopes" loading="lazy">
-      <figcaption><strong>The login.</strong> The External Client App's OAuth settings. The callback URL points to Claude, and the scopes are limited to what MCP needs: <em>mcp_api</em> to reach the hosted MCP servers and <em>refresh_token</em> to stay connected.</figcaption>
-    </figure>
-
-    <figure>
-      <img src="img/mcp/mcp-servers.jpg" alt="Salesforce Setup MCP Servers list with HeadlessPromtMCP, SObject All and Headless360 MCP Server active" loading="lazy">
-      <figcaption><strong>The servers.</strong> Three MCP servers active in Setup: <em>SObject All</em> (read and update records), the <em>Headless 360 (H360)</em> beta server, and <em>HeadlessPromtMCP</em>, a custom server that exposes one of my Prompt Builder templates.</figcaption>
-    </figure>
-
-    <figure class="chat-shot">
-      <img src="img/mcp/claude-connectors.jpg" alt="Claude connectors list showing Headless DtvOrg custom connector and the Salesforce connector, both connected" loading="lazy">
-      <figcaption><strong>The client side.</strong> In Claude, the org shows up as two connectors: <em>Headless DtvOrg</em> (my custom connector to SObject All) and the official <em>Salesforce</em> connector (the H360 server). Claude Code and Cursor connect to the same servers through their own config files.</figcaption>
-    </figure>
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">What you can do with it</div>
+    <h2>Everyday work, done by typing a sentence</h2>
+    <div class="grid-3">
+      <div class="card use-card"><h3>Ask instead of building a report</h3><p class="ex">"Which customers are still on a new customer offer?"</p><span class="where">Demo 1</span></div>
+      <div class="card use-card"><h3>Update a record by saying it</h3><p class="ex">"Set case 00001080 to Escalated and add a note."</p><span class="where">Demo 4</span></div>
+      <div class="card use-card"><h3>Fix many records at once</h3><p class="ex">26 records repriced and checked in one conversation.</p><span class="where">Demo 2</span></div>
+      <div class="card use-card"><h3>Run AI templates from anywhere</h3><p class="ex">A governed account summary, called from Claude Code.</p><span class="where">Demo 3</span></div>
+      <div class="card use-card"><h3>Reach people without a license</h3><p class="ex">Managers ask Salesforce questions from Microsoft Copilot.</p><span class="where">Next phase</span></div>
+      <div class="card use-card"><h3>Keep security in Salesforce</h3><p class="ex">Every request runs as a real user, with that user's permissions.</p><span class="where">Security</span></div>
+    </div>
   </div>
 </section>
 
@@ -188,7 +212,7 @@
   <div class="section-inner">
     <div class="eyebrow">Demo 2</div>
     <h2>Fix data by describing the change</h2>
-    <p class="lead" style="margin-bottom:16px">While building another project, I found that the demo package prices in my org weren't realistic. Instead of editing records one by one, I gave Claude the real pricing structure and had it make the change through MCP.</p>
+    <p class="lead" style="margin-bottom:16px">The package pricing in my mock org needed updating to line up with the DIRECTV-style pricing the org is modeled on. Instead of editing records one by one, I gave Claude the pricing structure and had it make the change through MCP.</p>
     <div class="card" style="margin-bottom:28px">
       <ul>
         <li><strong>4 package records</strong> updated with the regular price and new-customer discount.</li>
@@ -207,11 +231,55 @@
   <div class="section-inner">
     <div class="eyebrow">Demo 3</div>
     <h2>Run a Prompt Builder template from outside Salesforce</h2>
-    <p class="lead">Prompt templates normally run inside Salesforce. By exposing my <em>Headless Account Summary</em> template as its own MCP server (HeadlessPromtMCP), an AI tool like Claude Code can call it directly and get the same governed account summary without opening Salesforce.</p>
+    <p class="lead" style="margin-bottom:20px">Companies put real work into the AI instructions they write in Salesforce, called prompt templates. Normally those only run inside Salesforce. This demo uses the same template from an AI tool outside Salesforce, so that work isn't locked to one screen.</p>
+    <div class="flow-steps" style="margin-bottom:36px">
+      <div class="arch-step"><div class="num">1 · Built in Salesforce</div><h4>The template</h4><p>I wrote an Account Summary template in Prompt Builder, Salesforce's tool for saved AI instructions.</p></div>
+      <div class="arch-step"><div class="num">2 · Shared as a tool</div><h4>Its own MCP connection</h4><p>I published the template through its own MCP connection, so approved AI tools outside Salesforce can find and use it.</p></div>
+      <div class="arch-step"><div class="num">3 · Requested from outside</div><h4>An AI assistant</h4><p>From Claude Code, an AI assistant that runs on my PC, I asked for an account summary.</p></div>
+      <div class="arch-step"><div class="num">4 · Run in Salesforce</div><h4>The result comes back</h4><p>Salesforce ran the template on its own data and sent the finished summary back. The template is read-only, so it can't change records.</p></div>
+    </div>
+    </div>
     <figure class="chat-shot">
       <img src="img/mcp/prompt-template.jpg" alt="Prompt Builder Headless Account summary template with instructions to look up related records and not create or update any record" loading="lazy">
       <figcaption><strong>The template</strong> (Prompt Builder, Headless Account Summary). It takes an account and looks up the related records for a full summary. The instructions say it must never create or update a record, so this tool is read-only by design.</figcaption>
     </figure>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="section-inner">
+    <div class="eyebrow">Demo 4</div>
+    <h2>Update a case by saying it</h2>
+    <p class="lead">Updating a record is where MCP stops being a search box and starts doing work. I asked Claude to change a case and add a note in one sentence, and the case updated in Salesforce without being opened.</p>
+    <figure class="chat-shot">
+      <img src="img/mcp/demo-update-ask.jpg" alt="Claude chat box with the request typed: set case 00001059 to Escalated and add a case comment" loading="lazy">
+      <figcaption><strong>The ask.</strong> A plain sentence typed into Claude, the same way a rep would say it out loud.</figcaption>
+    </figure>
+    <figure class="chat-shot">
+      <img src="img/mcp/demo-update-request.jpg" alt="Request in Claude to set case 00001059 to Escalated and add a case comment, with Claude confirming the status changed from Working to Escalated and the comment was added" loading="lazy">
+      <figcaption><strong>The answer.</strong> Claude changed case 00001059 from Working to Escalated, added the comment word for word, and checked both after saving. It also pointed out that the separate Escalated checkbox wasn't changed, which matters if reports rely on it.</figcaption>
+    </figure>
+    <figure class="chat-shot">
+      <img src="img/mcp/demo-update-result.jpg" alt="Salesforce search preview of case 00001059 showing Status Escalated, owner DTV Escalations Queue and one case comment" loading="lazy">
+      <figcaption><strong>The result in Salesforce.</strong> The case now shows Status = Escalated and one case comment. Nobody opened the record to make the change.</figcaption>
+    </figure>
+    <figure>
+      <img src="img/mcp/demo-update-console.jpg" alt="Case 00001059 open in the Salesforce Service Console showing Subject, Description and Status Escalated" loading="lazy">
+      <figcaption><strong>The full case.</strong> Case 00001059 in the Service Console after the update: the subject and description from the customer's call, and Status = Escalated.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">Why it matters to a business</div>
+    <h2>Same data, fewer steps, same rules</h2>
+    <div class="grid-2">
+      <div class="card"><h3>Faster answers</h3><p>Questions that needed a report or a query take seconds, and the AI shows the query it ran so the answer can be checked.</p></div>
+      <div class="card"><h3>Fewer licenses</h3><p>People outside Salesforce, like managers in Microsoft 365, can get read-only answers in the tools they already use.</p></div>
+      <div class="card"><h3>Better data</h3><p>When updating a record is one sentence, reps keep records current instead of skipping the clicks.</p></div>
+      <div class="card"><h3>Same security</h3><p>Salesforce profiles, permission sets and sharing rules still decide what each person can see and change.</p></div>
+    </div>
   </div>
 </section>
 
@@ -226,6 +294,35 @@
 </section>
 
 <section>
+  <div class="section-inner">
+    <div class="eyebrow">How it's built</div>
+    <h2>Four pieces</h2>
+    <p class="lead">No custom code was needed for the connection itself. It's all Salesforce setup plus each AI tool's connector settings.</p>
+    <div class="flow-steps" style="margin-bottom:40px">
+      <div class="arch-step"><div class="num">01</div><h4>AI tool</h4><p>Claude (the chat app), Claude Code (an AI assistant that runs on a PC) and Cursor (an AI code editor), each connected to the org.</p></div>
+      <div class="arch-step"><div class="num">02</div><h4>OAuth login</h4><p>An External Client App handles sign-in, so every request runs as a real Salesforce user.</p></div>
+      <div class="arch-step"><div class="num">03</div><h4>Hosted MCP server</h4><p>Salesforce runs the MCP server. I turned on the ones I needed in Setup.</p></div>
+      <div class="arch-step"><div class="num">04</div><h4>Org data &amp; prompts</h4><p>Records, SOQL queries and a Prompt Builder template, all available as tools.</p></div>
+    </div>
+
+    <figure>
+      <img src="img/mcp/oauth-settings.jpg" alt="External Client App OAuth settings with the claude.ai callback URL and mcp_api and refresh_token scopes" loading="lazy">
+      <figcaption><strong>The login.</strong> The External Client App's OAuth settings. The callback URL points to Claude, and the scopes are limited to what MCP needs: <em>mcp_api</em> to reach the hosted MCP servers and <em>refresh_token</em> to stay connected.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/mcp/mcp-servers.jpg" alt="Salesforce Setup MCP Servers list with HeadlessPromtMCP, SObject All and Headless360 MCP Server active" loading="lazy">
+      <figcaption><strong>The servers.</strong> Three MCP servers active in Setup: <em>SObject All</em> (read and update records), the <em>Headless 360 (H360)</em> beta server (now part of AIforce), and <em>HeadlessPromtMCP</em>, a custom server that exposes one of my Prompt Builder templates.</figcaption>
+    </figure>
+
+    <figure class="chat-shot">
+      <img src="img/mcp/claude-connectors.jpg" alt="Claude connectors list showing Headless DtvOrg custom connector and the Salesforce connector, both connected" loading="lazy">
+      <figcaption><strong>The client side.</strong> In Claude, the org shows up as two connectors: <em>Headless DtvOrg</em> (my custom connector to SObject All) and the official <em>Salesforce</em> connector (the H360 server). Claude Code and Cursor connect to the same servers through their own config files.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="alt">
   <div class="section-inner">
     <div class="eyebrow">Results &amp; what's next</div>
     <h2>Where it landed</h2>
