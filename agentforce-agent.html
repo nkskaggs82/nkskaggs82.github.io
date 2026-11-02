@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Knowledge Search with Agentforce | Nicholas Skaggs</title>
+<meta name="description" content="An Agentforce AI agent that reads the open case, finds the matching Knowledge article, and gives the rep the steps with a source.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0A1628; --blue: #0176D3; --blue-light: #1B96FF; --blue-pale: #E8F4FF;
+    --white: #FFFFFF; --gray-1: #F3F6FB; --gray-2: #C9D9EE; --gray-3: #7B96B2;
+    --text: #1A2B3C; --accent: #00D4AA; --green: #2E844A; --orange: #DD7A01; --red: #BA0517;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--text); line-height: 1.6; }
+  a { color: var(--blue); }
+
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 64px; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--gray-2); }
+  .nav-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; color: var(--navy); letter-spacing: -0.5px; text-decoration: none; }
+  .nav-logo span { color: var(--blue); }
+  .nav-back { text-decoration: none; color: var(--gray-3); font-size: 14px; font-weight: 500; }
+  .nav-back:hover { color: var(--blue); }
+
+  .hero { background: linear-gradient(135deg, var(--navy) 0%, #0D2240 60%, #0A3060 100%); padding: 136px 48px 80px; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 700px; height: 700px; border-radius: 50%; background: radial-gradient(circle, rgba(1,118,211,0.15) 0%, transparent 70%); }
+  .hero-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(1,118,211,0.2); border: 1px solid rgba(27,150,255,0.3); border-radius: 100px; padding: 6px 16px; font-size: 12px; font-weight: 600; color: var(--blue-light); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 24px; }
+  .hero h1 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(36px, 5vw, 56px); font-weight: 700; color: var(--white); line-height: 1.08; letter-spacing: -1.2px; margin-bottom: 16px; }
+  .hero h1 span { color: var(--blue-light); }
+  .hero p { font-size: 17px; line-height: 1.75; color: rgba(255,255,255,0.72); max-width: 720px; margin-bottom: 32px; }
+  .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .hero-tags span { font-size: 12px; font-weight: 600; color: var(--blue-light); background: rgba(27,150,255,0.12); border: 1px solid rgba(27,150,255,0.25); padding: 5px 12px; border-radius: 6px; }
+
+  section { padding: 80px 48px; }
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+  .alt { background: var(--gray-1); }
+  .eyebrow { font-size: 12px; font-weight: 700; color: var(--blue); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(26px, 3.2vw, 36px); font-weight: 700; color: var(--navy); letter-spacing: -0.6px; margin-bottom: 16px; }
+  h3 { font-family: 'Space Grotesk', sans-serif; font-size: 19px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+  .lead { font-size: 17px; color: #3A4F65; max-width: 760px; margin-bottom: 36px; line-height: 1.75; }
+  p { color: #3A4F65; }
+  code { font-size: 0.92em; background: var(--blue-pale); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { background: var(--white); border: 1px solid var(--gray-2); border-radius: 14px; padding: 26px; }
+  .card ul { padding-left: 18px; margin-top: 8px; }
+  .card li { font-size: 14.5px; color: #3A4F65; margin-bottom: 6px; }
+  .card p { font-size: 14.5px; }
+
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; color: #fff; padding: 2px 8px; border-radius: 4px; }
+  .pill.green { background: var(--green); } .pill.orange { background: var(--orange); }
+
+  /* Demo steps */
+  .demo-step { margin-top: 56px; }
+  .demo-step:first-of-type { margin-top: 0; }
+  .demo-num { font-family: 'Space Grotesk', sans-serif; font-size: 12px; font-weight: 700; color: var(--blue); letter-spacing: 1px; margin-bottom: 6px; }
+  .demo-step > p { font-size: 15.5px; max-width: 760px; margin-bottom: 20px; }
+  .ask { font-weight: 600; color: var(--navy); }
+
+  /* Screenshots */
+  figure { margin: 0 0 28px; }
+  figure:last-child { margin-bottom: 0; }
+  figure img { width: 100%; height: auto; display: block; border-radius: 12px; border: 1px solid var(--gray-2); box-shadow: 0 8px 28px rgba(10,22,40,0.08); background: #fff; }
+  figcaption { font-size: 15.5px; color: #3A4F65; margin-top: 12px; line-height: 1.6; }
+  figcaption strong { color: var(--navy); }
+  .full-bleed { width: calc(100vw - 48px); max-width: 2000px; position: relative; left: 50%; transform: translateX(-50%); }
+  .full-bleed a { display: block; cursor: zoom-in; }
+  .shot-narrow img { max-width: 620px; margin: 0 auto; }
+  .shot-narrow figcaption { max-width: 620px; margin-left: auto; margin-right: auto; }
+
+  /* Tables */
+  .table-wrap { overflow-x: auto; background: var(--white); border: 1px solid var(--gray-2); border-radius: 14px; }
+  table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 14.5px; }
+  th { text-align: left; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--navy); background: var(--blue-pale); padding: 12px 16px; }
+  td { padding: 13px 16px; border-top: 1px solid var(--gray-2); color: #3A4F65; vertical-align: top; }
+  td strong { color: var(--navy); }
+
+  .callout { background: linear-gradient(135deg, #032D60 0%, #0B5CAB 100%); color: #fff; border-radius: 16px; padding: 32px 36px; margin-bottom: 28px; }
+  .callout h3 { color: #fff; }
+  .callout p { color: rgba(255,255,255,0.82); font-size: 15.5px; }
+
+  .next li { margin-bottom: 8px; }
+  footer { background: var(--navy); padding: 32px 48px; text-align: center; font-size: 13px; color: rgba(255,255,255,0.45); }
+  footer a { color: rgba(255,255,255,0.6); text-decoration: none; }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 16px; }
+    section { padding: 56px 16px; }
+    .hero { padding: 110px 16px 56px; }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .full-bleed { width: 100%; left: 0; transform: none; }
+    .callout { padding: 26px 22px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="index.html">Nicholas <span>Skaggs</span></a>
+  <a class="nav-back" href="index.html#projects">← All projects</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Portfolio Project · Agentforce · Version 1 · November 2026</div>
+    <h1>Knowledge Search with Agentforce:<br><span>from open case to the right fix</span></h1>
+    <p>When a call comes in, the case is already on screen. This AI agent reads that case, searches Knowledge for the matching article, and gives the rep the steps with a link to the source. It can also check for repeat issues, summarize the customer, and save a wrap-up note.</p>
+    <div class="hero-tags">
+      <span>Agentforce Builder</span><span>Data Library</span><span>Knowledge</span><span>Agent Actions</span><span>Service Console</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">The problem</div>
+    <h2>The case is open, but the answer is still somewhere else</h2>
+    <p class="lead">On a live call, the case and account pop up on screen, but that's only the start. The rep still has to find the right article, read through it, and walk the customer through the fix. Meanwhile the customer is waiting, and they may already be talking about canceling.</p>
+    <div class="grid-3">
+      <div class="card"><h3>Searching while they wait</h3><p>Every minute spent hunting for an article is a minute the customer sits on the line.</p></div>
+      <div class="card"><h3>A list isn't an answer</h3><p>Suggested articles are a good start, but the rep still has to open one and find the part that applies.</p></div>
+      <div class="card"><h3>Details get missed</h3><p>The steps live in the article, but what matters on this call lives in the case. A rep has to hold both in their head at once.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="section-inner">
+    <div class="eyebrow">The demo</div>
+    <h2>From open case to the right steps</h2>
+    <p class="lead">A customer can't set up their Gemini device. They want a technician or they'll cancel, but their zip code isn't eligible for a visit, so the rep has to guide them over the phone. The rep has the case open and asks the AI agent for help.</p>
+
+    <figure class="full-bleed">
+      <a href="img/agentforce-agent/case-and-question.jpg" target="_blank"><img src="img/agentforce-agent/case-and-question.jpg" alt="Full Service Console case page with the Case Reason, Subject and Description fields outlined in red, and the rep's question outlined in red in the Agentforce panel"></a>
+      <figcaption><strong>The case and the rep's question.</strong> The question doesn't mention Gemini. The AI agent gets that from the Subject and Description. Select the image to open it full size.</figcaption>
+    </figure>
+
+    <figure class="shot-narrow">
+      <img src="img/agentforce-agent/agent-answer.jpg" alt="Agentforce answer listing what the customer needs and the Gemini Air setup steps, with a link to the source article" loading="lazy">
+      <figcaption><strong>The answer.</strong> The first line comes from the case: no technician can go out, so the rep needs to guide the customer with VRA (Visual Remote Assistant, a live video session). The rest comes from the Knowledge article, and the source links back to it. Two screenshots joined so the whole answer fits.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="img/agentforce-agent/knowledge-article.jpg" alt="The How to Setup your Gemini Air Device Knowledge article with seven numbered steps" loading="lazy">
+      <figcaption><strong>The source article.</strong> What the customer needs comes first, then the setup steps. The answer follows the same order.</figcaption>
+    </figure>
+
+    <div class="grid-2" style="align-items:center">
+      <figure>
+        <img src="img/agentforce-agent/suggested-articles.jpg" alt="Suggested Articles list on the case page with How to Setup your Gemini Air Device outlined in red at the top" loading="lazy">
+        <figcaption><strong>Without the AI agent.</strong> The case page suggests the right article, but the rep still has to open it and read it during the call.</figcaption>
+      </figure>
+      <div class="card">
+        <h3>With the AI agent</h3>
+        <ul>
+          <li>Reads the case</li>
+          <li>Finds the article</li>
+          <li>Gives the steps</li>
+          <li>Applies what the case says about this customer</li>
+          <li>Links the source</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">How it's built</div>
+    <h2>Four pieces working together</h2>
+    <div class="grid-2">
+      <div class="card"><h3>1. Get Record Details</h3><p>A standard action that reads the open case, so the AI agent knows the Subject and Description.</p></div>
+      <div class="card"><h3>2. Answer Questions with Knowledge</h3><p>A standard action that searches the articles and writes the answer from what it finds.</p></div>
+      <div class="card"><h3>3. Data Library</h3><p>The set of content the AI agent is allowed to search. Mine holds the Knowledge articles.</p></div>
+      <div class="card"><h3>4. Show sources</h3><p>A Data Library setting that links each answer back to the article it came from.</p></div>
+    </div>
+    <figure style="margin-top:28px">
+      <img src="img/agentforce-agent/data-library.jpg" alt="Agentforce Data Library status for Knowledge Library, with every stage complete from data ingestion through the retriever" loading="lazy">
+      <figcaption><strong>The Knowledge Data Library.</strong> Salesforce pulls in the articles, builds a search index, and creates the retriever the AI agent uses to find them.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">More than search</div>
+    <h2>Customer summary and wrap-up on the same call</h2>
+    <p class="lead">The rep can also ask for a summary. This reuses my <a href="customer-insights.html">Customer Insights</a> project, so the same case gets a call-ready snapshot, a repeat-issue check, the matching article and a cancel-risk warning. At the end of the call, it can save a wrap-up note to the case.</p>
+    <figure class="shot-narrow">
+      <img src="img/agentforce-agent/customer-summary.jpg" alt="Agentforce customer summary showing package, price, offers, today's issue, repeat issue No, the matching article, a loyalty watch and CARES script lines" loading="lazy">
+      <figcaption><strong>"Summarize this customer."</strong> It flags Repeat Issue: No and points to the same Gemini article. Because the customer threatened to cancel, it also adds a Loyalty Watch and CARES lines. Several screenshots joined so the whole answer fits.</figcaption>
+    </figure>
+    <figure class="shot-narrow" style="margin-top:36px">
+      <img src="img/agentforce-agent/wrap-up-request.jpg" alt="The rep asks Agentforce to save a wrap-up note and it confirms the note was saved" loading="lazy">
+      <figcaption><strong>"Save a wrap-up note for this case."</strong> One request at the end of the call.</figcaption>
+    </figure>
+    <figure class="full-bleed">
+      <a href="img/agentforce-agent/wrap-up-note.jpg" target="_blank"><img src="img/agentforce-agent/wrap-up-note.jpg" alt="Case page with the Summary Notes field outlined in red, showing the Issue, Details, Cancel Risk and Next Step" loading="lazy"></a>
+      <figcaption><strong>The saved note.</strong> Summary Notes on the case now has the issue, details, cancel risk and next step, outlined in red.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="alt">
+  <div class="section-inner">
+    <div class="eyebrow">Why I built it this way</div>
+    <h2>The decisions behind it</h2>
+    <div class="grid-3">
+      <div class="card"><h3>Read the case first</h3><p>My first test failed. The Knowledge action can't read a record, so it searched for the words "this case's issue." Adding Get Record Details and an instruction to read the case first fixed that.</p></div>
+      <div class="card"><h3>Search by subject</h3><p>The word "VRA" in the case description once pulled the wrong article, and the setup steps disappeared. Now the subject finds the steps, and the description shapes how the rep handles the customer.</p></div>
+      <div class="card"><h3>Fix the article</h3><p>The list of what the customer needs sat apart from the numbered steps, so answers kept dropping it. Moving it into step 1, and searching by subject, brought it back in my tests.</p></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <div class="eyebrow">What's next</div>
+    <h2>Version 1, and where it goes from here</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>What I learned</h3>
+        <ul>
+          <li>Good answers start with good articles. How Knowledge is written matters as much as the instructions.</li>
+          <li>Use actions and instructions when the AI agent can work it out. Use a flow when steps must run the same way every time.</li>
+          <li>A rep needs to see where an answer came from before they can trust it.</li>
+        </ul>
+      </div>
+      <div class="card next">
+        <h3>What's next</h3>
+        <ul>
+          <li><strong>More articles:</strong> add clear, step-by-step articles for common tech calls.</li>
+          <li><strong>VRA reminders:</strong> have the AI agent suggest a video session whenever it would help.</li>
+          <li><strong>Tighter answers:</strong> keep every answer to only what the article says.</li>
+          <li><strong>Test suite:</strong> run batch tests in Testing Center and show the results.</li>
+        </ul>
+      </div>
+    </div>
+    <p style="font-size:13px; color:#5A7188; margin-top:28px">Built in my own Salesforce developer org with mock DirecTV-style data. No real customer data is used. Knowledge articles are based on public support content.</p>
+  </div>
+</section>
+
+<footer>
+  <p>© 2026 Nicholas Skaggs · <a href="index.html">Portfolio home</a> · <a href="https://www.linkedin.com/in/nicholas-skaggs-88b230298" target="_blank">LinkedIn ↗</a></p>
+</footer>
+
+</body>
+</html>
