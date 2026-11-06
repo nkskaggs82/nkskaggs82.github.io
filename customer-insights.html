@@ -102,6 +102,8 @@
     .arch-step:not(:last-child)::after { content: '↓'; right: 50%; top: auto; bottom: -15px; transform: translateX(50%); }
     .callout { padding: 26px 22px; }
   }
+  .demo-strip { position: absolute; top: 64px; left: 0; right: 0; z-index: 2; padding: 8px 24px; text-align: center; font-size: 13px; line-height: 1.4; color: rgba(255,255,255,0.78); background: rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.1); }
+  @media (max-width: 768px) { .demo-strip { position: static; margin: -46px -16px 22px; padding: 10px 16px; } }
 </style>
 </head>
 <body>
@@ -112,6 +114,7 @@
 </nav>
 
 <header class="hero">
+  <div class="demo-strip">This is an independent portfolio demo using mock data. It is not affiliated with, endorsed by, or sponsored by DirecTV or Salesforce.</div>
   <div class="hero-inner">
     <div class="hero-badge">Portfolio Project · Prompt Builder + Flow · Completed October 2026</div>
     <h1>Customer Insights:<br><span>the whole customer in one click</span></h1>
@@ -361,6 +364,7 @@
 
 <footer>
   <p>© 2026 Nicholas Skaggs · <a href="index.html">Portfolio home</a> · <a href="https://www.linkedin.com/in/nicholas-skaggs-88b230298" target="_blank">LinkedIn ↗</a></p>
+  <p style="max-width:900px;margin:10px auto 0;font-size:12px;line-height:1.5;">This is an independent portfolio demonstration and is not affiliated with, endorsed by, or sponsored by DirecTV, Salesforce, or their affiliates. Salesforce, Service Cloud, and Agentforce are trademarks of Salesforce, Inc.</p>
 </footer>
 
 </body>
